@@ -1,0 +1,92 @@
+# Copyright 2021 DoiT International
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kibana
+  namespace: doit-lab-02-bc
+  labels:
+    k8s-app: kibana
+    k8s-scope: gke-ws-doit-lab-02-bc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: kibana
+  template:
+    metadata:
+      namespace: doit-lab-02-bc
+      labels:
+        k8s-app: kibana
+        k8s-scope: gke-ws-doit-lab-02-bc
+    spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: kibana
+          image: docker.elastic.co/kibana/kibana-oss:6.2.4
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+            requests:
+              cpu: 500m
+              memory: 500Mi
+          env:
+            - name: ELASTICSEARCH_HOSTS
+              value: http://elasticsearch-discovery.doit-lab-02-b.svc.cluster.local:9200
+            - name: SERVER_NAME
+              value: kibana
+            - name: SERVER_BASEPATH
+              value: /api/v1/namespaces/doit-lab-02-bc/services/kibana/proxy
+            - name: SERVER_REWRITEBASEPATH
+              value: "false"
+          ports:
+            - containerPort: 5601
+              name: ui
+              protocol: TCP
+          # are you still alive?
+          livenessProbe:
+            httpGet:
+              path: /api/status
+              port: ui
+            initialDelaySeconds: 60
+            timeoutSeconds: 10
+          # are you ready?
+          readinessProbe:
+            httpGet:
+              path: /api/status
+              port: ui
+            initialDelaySeconds: 20
+            timeoutSeconds: 10
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana
+  namespace: doit-lab-02-bc
+  labels:
+    k8s-app: kibana
+    k8s-scope: gke-ws-doit-lab-02-bc
+spec:
+  ports:
+  - port: 5601
+    protocol: TCP
+    targetPort: ui
+  selector:
+    k8s-app: kibana

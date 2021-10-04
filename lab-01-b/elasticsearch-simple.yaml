@@ -1,0 +1,123 @@
+# Copyright 2021 DoiT International
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# GIST-Inspired by https://pyk.github.io (https://gist.github.com/pyk/3fc87db27eed864e354974bc25aabf88)
+#
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: doit-lab-01-b
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elasticsearch
+  namespace: doit-lab-01-b
+  labels:
+    k8s-app: elasticsearch
+    k8s-scope: gke-ws-doit-lab-01-b
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: elasticsearch
+  template:
+    metadata:
+      labels:
+        k8s-app: elasticsearch
+        k8s-scope: gke-ws-doit-lab-01-b
+    spec:
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: elasticsearch-data
+      terminationGracePeriodSeconds: 300
+      initContainers:
+      - name: fix-the-volume-permission
+        image: busybox
+        command:
+        - sh
+        - -c
+        - chown -R 1000:1000 /usr/share/elasticsearch/data
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: data
+          mountPath: /usr/share/elasticsearch/data
+      - name: increase-the-vm-max-map-count
+        image: busybox
+        command:
+        - sysctl
+        - -w
+        - vm.max_map_count=262144
+        securityContext:
+          privileged: true
+      - name: increase-the-ulimit
+        image: busybox
+        command:
+        - sh
+        - -c
+        - ulimit -n 65536
+        securityContext:
+          privileged: true
+      containers:
+      - name: elasticsearch
+        image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.2.4
+        ports:
+        - containerPort: 9200
+          name: http
+        - containerPort: 9300
+          name: tcp
+        resources:
+          requests:
+            memory: 6Gi
+            cpu: 1000m
+          limits:
+            memory: 12Gi
+            cpu: 2000m
+        env:
+          - name: cluster.name # NOTE: the cluster name; update this
+            value: elasticsearch-cluster
+          - name: node.name
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: discovery.type
+            value: "single-node"
+          - name: ES_JAVA_OPTS
+            value: -Xms6g -Xmx6g
+        volumeMounts:
+        - name: data
+          mountPath: /usr/share/elasticsearch/data
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: elasticsearch-data
+  namespace: doit-lab-01-b
+  labels:
+    k8s-app: elasticsearch
+    k8s-scope: gke-ws-doit-lab-01-b
+spec:
+  storageClassName: premium-rwo
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 40Gi

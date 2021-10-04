@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: load-generator
+  name: load-generator
+  namespace: doit-lab-03
+spec:
+  containers:
+  - name: load-generator
+    image: busybox
+    args:
+    - /bin/sh
+    - -c
+    - while sleep 0.01; do wget -q -O- http://php-apache; done
+    resources:
+      limits:
+        cpu: 100m
+        memory: 75Mi
+      requests:
+        cpu: 50m
+        memory: 50Mi
+  restartPolicy: Always
