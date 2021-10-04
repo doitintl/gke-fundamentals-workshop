@@ -17,7 +17,7 @@
 # GCLOUD SDK && GKE Cluster Init Script
 #
 
-# get hostname
+# get username
 USERNAME="$(whoami)"
 
 printf "%s\n" "[INIT] compute/zone" ;
