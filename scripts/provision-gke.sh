@@ -17,14 +17,13 @@
 # GCLOUD SDK && GKE Cluster Init Script
 #
 
-# get username
-USERNAME="$(whoami)"
+# use $RANDOM for clustername
 
 printf "%s\n" "[INIT] compute/zone" ;
 gcloud config set compute/zone europe-west1-b ;
 
 printf "%s\n" "[INIT] workshop cluster" ;
-gcloud container clusters create workshop-$USERNAME \
+gcloud container clusters create workshop-$RANDOM \
 --machine-type n1-standard-4 \
 --scopes "https://www.googleapis.com/auth/source.read_write,cloud-platform" \
 --node-locations europe-west1-b,europe-west1-c,europe-west1-d \
