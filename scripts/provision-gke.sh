@@ -33,7 +33,7 @@ gcloud container clusters create workshop-$USERNAME \
 --image-type "ubuntu" \
 --disk-type "pd-ssd" \
 --disk-size "120" \
---num-nodes "3" \
+--num-nodes "1" \
 --logging=SYSTEM,WORKLOAD \
 --monitoring=SYSTEM \
 --network "default" \
