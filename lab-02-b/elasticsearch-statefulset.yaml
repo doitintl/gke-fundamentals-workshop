@@ -109,7 +109,7 @@ spec:
                 fieldPath: metadata.name
           # NOTE: This will tell the elasticsearch node where to connect to other nodes to form a cluster. The headless service returns one IP per pod in ready state.
           - name: discovery.zen.ping.unicast.hosts
-            value: "elasticsearch-discovery.default.svc.cluster.local"
+            value: "elasticsearch-discovery.doit-lab-02-bc.svc.cluster.local"
           - name: discovery.zen.minimum_master_nodes
             value: "2"
           # NOTE: You can increase the heap size
