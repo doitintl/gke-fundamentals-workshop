@@ -35,6 +35,8 @@ then
     kubectl apply -f ../lab-03/load-generator-pod.yaml
 fi
 
+echo "Workloads deployed and load being generated. Run kubectl top now."
+
 read -p "Deploy HPA (y/n) ? " -n 1 -r; echo
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
