@@ -34,7 +34,7 @@ kubectl apply -f ../lab-02-c/
 
 DASHBOARD_URL="http://localhost:8001/api/v1/namespaces/doit-lab-02-b/services/https:kubernetes-dashboard:/proxy/#/workloads?namespace=default"
 ADMIN_TOKEN=$(kubectl -n doit-lab-02-b get secret $(kubectl -n doit-lab-02-b get sa/admin-user -o jsonpath="{.secrets[0].name}") -o go-template="{{.data.token | base64decode}}")
-KIBANA_URL="http://localhost:8001/api/v1/namespaces/doit-lab-02-c/services/kibana/proxy/app/kibana#/dev_tools/console?_g=()"
+KIBANA_URL="http://localhost:8001/api/v1/namespaces/doit-lab-02-bc/services/kibana/proxy/app/kibana#/dev_tools/console?_g=()"
 
 nohup kubectl proxy &
 

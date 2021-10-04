@@ -47,7 +47,7 @@ spec:
               memory: 500Mi
           env:
             - name: ELASTICSEARCH_HOSTS
-              value: http://elasticsearch-discovery.doit-lab-02-b.svc.cluster.local:9200
+              value: http://elasticsearch-discovery.doit-lab-02-bc.svc.cluster.local:9200
             - name: SERVER_NAME
               value: kibana
             - name: SERVER_BASEPATH
