@@ -15,23 +15,32 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: consumer
+  name: job-05-exit-limit-with-ttl
   namespace: doit-lab-02-d
   labels:
-    k8s-app: job-05-ttl
+    k8s-app: job-05-exit-limit-with-ttl
     k8s-scope: gke-ws-doit-lab-02-d
 spec:
+  # try to run 5 times before considering a Job as failed
   backoffLimit: 5
+  # once a Job reaches activeDeadlineSeconds, all of its running Pods
+  # are terminated and the Job status will become type: Failed with
+  # reason: DeadlineExceeded.
   activeDeadlineSeconds: 20
+  # The Job pi-with-ttl will be eligible to be automatically deleted,
+  # 60 seconds after it finishes. If the field is set to 0, the Job
+  # will be eligible to be automatically deleted immediately after it
+  # finishes. If the field is unset, this Job won't be cleaned up by
+  # the TTL controller after it finishes.
   ttlSecondsAfterFinished: 60
   template:
     metadata:
-      name: job-05-ttl
+      name: job-05-exit-limit-with-ttl-tpl
     spec:
       containers:
-        - name: consumer
+        - name: job-05-exit-limit-with-ttl-c
           image: busybox
           command: ["/bin/sh", "-c"]
-          args: ["echo 'consuming momox data (yeah!)'; sleep 1; exit 1"]
+          args: ["echo 'just running another (always failing) consumer job'; sleep 1; exit 1"]
       restartPolicy: OnFailure
 

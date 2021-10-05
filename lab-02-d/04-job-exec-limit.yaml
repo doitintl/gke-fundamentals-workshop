@@ -15,21 +15,25 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: consumer
+  name: job-04-exec-limit
   namespace: doit-lab-02-d
   labels:
     k8s-app: job-03-exec-limit
     k8s-scope: gke-ws-doit-lab-02-d
 spec:
+  # try to run 5 times before considering a Job as failed
   backoffLimit: 5
+  # once a Job reaches activeDeadlineSeconds, all of its running Pods
+  # are terminated and the Job status will become type: Failed with
+  # reason: DeadlineExceeded.
   activeDeadlineSeconds: 20
   template:
     metadata:
-      name: job-03-exec-limit
+      name: job-04-exec-limit-tpl
     spec:
       containers:
-        - name: consumer
+        - name: job-04-exec-limit-c
           image: busybox
           command: ["/bin/sh", "-c"]
-          args: ["echo 'consuming some momox data'; sleep 1; exit 1"]
+          args: ["echo 'just running a (always failing) parallel-consumer job'; sleep 1; exit 1;"]
       restartPolicy: OnFailure

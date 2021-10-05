@@ -21,17 +21,17 @@ metadata:
     k8s-app: job-02-multiple
     k8s-scope: gke-ws-doit-lab-02-d
 spec:
-  completions: 5
+  completions: 5 # this job will run 5 times
   template:
     metadata:
-      name: consumer
+      name: job-02-multiple-consumer-tpl
       labels:
         k8s-app: job-02-multiple
         k8s-scope: gke-ws-doit-lab-02-d
     spec:
       containers:
-        - name: consumer
+        - name: job-02-multiple-consumer-c
           image: busybox
           command: ["/bin/sh","-c"]
-          args: ["echo 'consuming a momox message'; sleep 5"]
+          args: ["echo 'just running a simple multiple-consumer-call job'; sleep 5"]
       restartPolicy: OnFailure

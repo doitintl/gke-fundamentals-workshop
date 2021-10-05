@@ -23,10 +23,10 @@ metadata:
 spec:
   template:
     metadata:
-      name: job-01-simple
+      name: job-01-simple-tpl
     spec:
       containers:
-        - name: job-01-simple
+        - name: job-01-simple-c
           image: busybox
-          command: ["echo", "Running a momox job"]
+          command: ["echo", "just running a simple single-call job"]
       restartPolicy: OnFailure

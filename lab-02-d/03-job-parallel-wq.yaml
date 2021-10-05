@@ -21,14 +21,15 @@ metadata:
     k8s-app: job-03-parallel-wq
     k8s-scope: gke-ws-doit-lab-02-d
 spec:
+  # run this job as 5 parallel tasks at once
   parallelism: 5
   template:
     metadata:
-      name: consumer
+      name: job-03-parallel-wq-tpl
     spec:
       containers:
-        - name: consumer
+        - name: job-03-parallel-wq-c
           image: busybox
           command: ["/bin/sh","-c"]
-          args: ["echo 'consuming another momox message'; sleep $(shuf -i 5-10 -n 1)"]
+          args: ["echo 'just running a parallel-consumer job'; sleep $(shuf -i 3-9 -n 1)"]
       restartPolicy: OnFailure
