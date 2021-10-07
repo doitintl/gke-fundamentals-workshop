@@ -17,28 +17,24 @@
 # GCLOUD SDK && GKE Cluster Init Script
 #
 
-# use $RANDOM for clustername
-
-printf "%s\n" "[INIT] compute/zone" ;
-gcloud config set compute/zone europe-west1-b ;
-
 printf "%s\n" "[INIT] workshop cluster" ;
-gcloud container clusters create workshop-$RANDOM \
+RANDOM_CLUSTER_KEY=$RANDOM; gcloud container clusters create workshop-${RANDOM_CLUSTER_KEY} \
 --machine-type n1-standard-4 \
 --scopes "https://www.googleapis.com/auth/source.read_write,cloud-platform" \
+--region europe-west1 \
 --node-locations europe-west1-b,europe-west1-c,europe-west1-d \
 --release-channel stable \
---region europe-west1 \
 --image-type "ubuntu" \
 --disk-type "pd-ssd" \
---disk-size "120" \
+--disk-size "60" \
 --num-nodes "1" \
+--max-nodes "1" \
+--min-nodes "1" \
 --logging=SYSTEM,WORKLOAD \
 --monitoring=SYSTEM \
 --network "default" \
 --addons HorizontalPodAutoscaling,HttpLoadBalancing,NodeLocalDNS \
---labels k8s-scope=kubernetes-workshop-doit,k8s-cluster=primary,environment=workshop ;
-
-printf "%s\n" "[TEST] access to kubernetes API via kubectl" ;
-kubectl get all --all-namespaces && \
-kubectl cluster-info ;
+--labels k8s-scope=gke-workshop-doit,k8s-cluster=primary,environment=workshop && \
+printf "%s\n" "[INIT] test access new cluster using k8s API via kubectl" ; \
+kubectl get all --all-namespaces && kubectl cluster-info && \
+printf "\n%s\n\n" "[INIT] workshop cluster finally initialized -> [workshop-${RANDOM_CLUSTER_KEY}] <-" ;
