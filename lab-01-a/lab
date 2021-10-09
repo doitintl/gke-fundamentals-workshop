@@ -27,9 +27,13 @@ LAB_NAME=${PWD##*/} ; LAB_REGION=$(jq -Mrc '.region.cluster' "../${SET_DEFAULT_C
 OPT_DEBUG=0 ; OPT_QUIET=0 ; OPT_NOCHECK=0
 
 # -- check scope of our script call (deploy||destroy) -----------------------------------------------------------------
+if [[ $# -eq 0 ]]; then
+    do_show_help_for_lab
+fi
+
 while test $# -gt 0
 do
-    # -- check for additional arguments
+    # -- check for additional arguments (2nd argument in script call)
     if [[ $# -gt 1 ]]; then
         case "$2" in
             --no-check)
@@ -44,11 +48,20 @@ do
         esac
     fi
 
-    # check for primary commands
+    # check for primary commands (1st argument in script line
     case "$1" in
+        cluster-reset)
+            preflight "${LAB_REGION}"
+            do_cluster_retirement $OPT_DEBUG $OPT_QUIET $OPT_NOCHECK
+            do_cluster_provision $OPT_DEBUG $OPT_QUIET $OPT_NOCHECK
+            ;;
         cluster-init)
             preflight "${LAB_REGION}"
             do_cluster_provision $OPT_DEBUG $OPT_QUIET $OPT_NOCHECK
+            ;;
+        cluster-destroy)
+            preflight "${LAB_REGION}"
+            do_cluster_retirement $OPT_DEBUG $OPT_QUIET $OPT_NOCHECK
             ;;
         deploy)
             preflight "${LAB_REGION}"
