@@ -1,0 +1,10 @@
+{
+  "output" : {
+    "logs": false,
+    "verbosity_level": 1,
+    "show_logo": true,
+    "color_mode": true,
+    "init_check_bin": true,
+    "init_check_gcloud": true
+  }
+}

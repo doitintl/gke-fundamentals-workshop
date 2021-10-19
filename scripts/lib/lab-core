@@ -31,7 +31,7 @@ SET_SPINNER='-\|/'
 SET_PID_GCLOUD_CMD=0
 
 # --
-MSG_START_CLUSTER_DEPLOY="do you want to start the \033[92;5;11m provisioning\033[0m process of this cluster now?"
+MSG_START_CLUSTER_DEPLOY="do you want to start the \033[92;5;11mprovisioning\033[0m process of this cluster now?"
 MSG_START_DEPLOY="start\033[92;5;11m deploying\033[0m training workload to your cluster"
 MSG_ABORT_DEPLOY="deployment of training workload aborted!"
 MSG_ABORT_CLUSTER_DEPLOY="provisioning of workshop-cluster aborted!"
@@ -367,7 +367,7 @@ do_cluster_provision() {
                     --labels k8s-env=workshop,k8s-agent-scope="${C_CLUSTER_RANDOM_NAME}",k8s-agent-ident="${C_CLUSTER_LOCAL_AGENT}",k8s-scope=gke-workshop-doit,k8s-cluster=primary > "../logs/${SET_DEFAULT_LOG_FILE_CLUSTER_UP}" 2>&1 &
             # -- show loading spinner until background process finished gracefully
             SET_PID_GCLOUD_CMD=$!
-            do_print_msg "ignite regional gke-cluster [\033[96;5;11m ${C_CLUSTER_RANDOM_NAME} \033[0m] build up process @pid=[\033[96;5;11m ${SET_PID_GCLOUD_CMD} \033[0m ]" 0; do_print_line
+            do_print_msg "ignite regional gke-cluster [\033[96;5;11m ${C_CLUSTER_RANDOM_NAME} \033[0m] build up process @pid=[\033[96;5;11m ${SET_PID_GCLOUD_CMD} \033[0m ]" 0 0; do_print_line
             i=0 ; while kill -0 ${SET_PID_GCLOUD_CMD} 2>/dev/null
             do
                 i=$(( (i+1) %4 ))
@@ -393,34 +393,44 @@ do_cluster_provision() {
 do_start_deploy() {
 
     local P_REGION=${1}
-    local P_LAB_NAME=${1}
+    local P_LAB_CLUSTER=${2}
+    local P_LAB_NAME=${3}
 
     # -- check cluster availability first
-    do_check_cluster "${P_REGION}" ; do_print_line
-    # -- final user input before deployment process starts
-    read -p "$(echo -e "[${MSG_COLOR_INFO}""${MSG_TAG_INP}""${MSG_COLOR_RESET}] ${MSG_COLOR_DARK}///${MSG_COLOR_RESET} ${MSG_START_DEPLOY} ${MSG_COLOR_DARK}/// result -> ${MSG_COLOR_RESET}[ ${MSG_COLOR_INFO}""${P_LAB_NAME}""${MSG_COLOR_RESET} ] ${MSG_COLOR_DARK}<-${MSG_COLOR_RESET} [y/n]? ")" -n 1 -r; echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]
-    then
-        do_print_msg "${MSG_ABORT_DEPLOY}" "${P_LAB_NAME}" 2;  exit 1
+    CLUSTER_DEEP_CHECK_RESULT=$(do_check_cluster "${P_REGION}" 1)
+    if [ "${CLUSTER_DEEP_CHECK_RESULT}" == "true" ]; then
+        # -- final user input before deployment process starts
+        read -p "$(echo -e "[${MSG_COLOR_INFO}""${MSG_TAG_INP}""${MSG_COLOR_RESET}] ${MSG_COLOR_DARK}///${MSG_COLOR_RESET} ${MSG_START_DEPLOY} [ ${MSG_COLOR_INFO}${P_LAB_CLUSTER}${MSG_COLOR_RESET} ] ${MSG_COLOR_DARK}/// workload -> ${MSG_COLOR_RESET}[ ${MSG_COLOR_INFO}""${P_LAB_NAME}""${MSG_COLOR_RESET} ] ${MSG_COLOR_DARK}<-${MSG_COLOR_RESET} [y/n]? ")" -n 1 -r; echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]
+        then
+            do_print_msg "${MSG_ABORT_DEPLOY}" "${P_LAB_NAME}" 2;  exit 1
+        else
+            do_deploy "${P_LAB_NAME}"
+        fi
     else
-        do_deploy "${P_LAB_NAME}"
+        printf "\n"; do_print_msg "regional gke-cluster [\033[96;5;11m ${P_LAB_CLUSTER} \033[0m] not available / not accessible! <abort>" "error" 3;
     fi
 }
 
 do_start_destroy() {
 
     local P_REGION=${1}
-    local P_LAB_NAME=${1}
+    local P_LAB_CLUSTER=${2}
+    local P_LAB_NAME=${3}
 
     # -- check cluster availability first
-    do_check_cluster "${P_REGION}" ; do_print_line
-    # -- final user input before regression process starts
-    read -p "$(echo -e "[${MSG_COLOR_INFO}""${MSG_TAG_INP}""${MSG_COLOR_RESET}] ${MSG_COLOR_DARK}///${MSG_COLOR_RESET} ${MSG_START_DESTROY} ${MSG_COLOR_DARK}/// result -> ${MSG_COLOR_RESET}[ ${MSG_COLOR_INFO}""${P_LAB_NAME}""${MSG_COLOR_RESET} ] ${MSG_COLOR_DARK}<-${MSG_COLOR_RESET} [y/n]? ")" -n 1 -r; echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]
-    then
-        do_print_msg "${MSG_ABORT_DESTROY}" "${P_LAB_NAME}" 2;  exit 1
+    CLUSTER_DEEP_CHECK_RESULT=$(do_check_cluster "${P_REGION}" 1)
+    if [ "${CLUSTER_DEEP_CHECK_RESULT}" == "true" ]; then
+        # -- final user input before regression process starts
+        read -p "$(echo -e "[${MSG_COLOR_INFO}""${MSG_TAG_INP}""${MSG_COLOR_RESET}] ${MSG_COLOR_DARK}///${MSG_COLOR_RESET} ${MSG_START_DESTROY} [ ${MSG_COLOR_INFO}${P_LAB_CLUSTER}${MSG_COLOR_RESET} ] ${MSG_COLOR_DARK}/// workload -> ${MSG_COLOR_RESET}[ ${MSG_COLOR_INFO}""${P_LAB_NAME}""${MSG_COLOR_RESET} ] ${MSG_COLOR_DARK}<-${MSG_COLOR_RESET} [y/n]? ")" -n 1 -r; echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]
+        then
+            do_print_msg "${MSG_ABORT_DESTROY}" "${P_LAB_NAME}" 2;  exit 1
+        else
+            do_destroy "${P_LAB_NAME}"
+        fi
     else
-        do_destroy "${P_LAB_NAME}"
+            printf "\n"; do_print_msg "regional gke-cluster [\033[96;5;11m ${P_LAB_CLUSTER} \033[0m] not available / not accessible! <abort>" "error" 3;
     fi
 }
 
@@ -433,7 +443,9 @@ do_deploy () {
         cd "$(find ../ -name "${P_LAB_NAME}.key" -execdir pwd \; -quit)"
     fi
 
-    do_print_msg "${MSG_START_DEPLOY}" "${P_LAB_NAME}" 0
+    do_print_msg "${MSG_START_DEPLOY}" "${P_LAB_NAME}" 0 ; do_print_line
+
+    ${BIN_KUBECTL:-kubectl} apply -f .
 }
 
 do_destroy () {
@@ -445,7 +457,9 @@ do_destroy () {
         cd "$(find ../ -name "${P_LAB_NAME}.key" -execdir pwd \; -quit)"
     fi
 
-    do_print_msg "${MSG_START_DESTROY}" "${P_LAB_NAME}" 0
+    do_print_msg "${MSG_START_DESTROY}" "${P_LAB_NAME}" 0 ; do_print_line
+
+    ${BIN_KUBECTL:-kubectl} delete -f .
 }
 
 do_show_help_for_lab() {

@@ -51,10 +51,9 @@ makefile.json
 # ignore local key, json-config & -cache files (make some exceptions)
 **/*.jqc
 **/*.key
-**/gke-labs-cluster.json
-**/gke-labs-config.json
 
 !scripts/lib/lab-version.key
-!lab-01-a/lab-01-a.key
 !scripts/assets/tpl/gke-labs-cluster.json
 !scripts/assets/tpl/gke-labs-config.json
+!gke-labs-cluster.json
+!gke-labs-config.json
