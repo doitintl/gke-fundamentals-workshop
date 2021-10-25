@@ -1,0 +1,15 @@
+1. You can check the state of Pods at any time with the following kubectl command:
+
+-> $ kubectl get pods -n doit-lab-03
+
+2. You can check your deployment with the following kubectl command:
+
+-> $ kubectl get deployments -n doit-lab-03
+
+3. You can check the corresponding service endpoint by the following kubectl command:
+
+-> $ kubectl get services -n doit-lab-03
+
+4. You can test the deployed web application using this command and access the url http://localhost:8080
+
+-> $ kubectl port-forward service/static-web-app-service 8080:8080 -n doit-lab-03
