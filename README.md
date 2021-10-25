@@ -35,12 +35,11 @@ The preparation of the GKE cluster is one of the first steps of our workshop and
 ## GCloud SDK Preparation
 ```bash
 gcloud init ;
-gcloud config set compute/zone europe-west1-b ;
 ```
 
 ## Workshop Cluster Provisioning
 
-The present gcloud command call initializes the workshop in a configuration that is as compatible as possible for all upcoming labs. 
+The present gcloud command call initializes the workshop-cluster as regional cluster configuration with one node in each of three availability zones. We use the `ubuntu` k8s node image in these labs to keep the cluster as compatible as possible for further content (e.g. portworx storage provider). 
 
 ```bash
 gcloud container clusters create workshop \
@@ -72,6 +71,10 @@ In the last step we authenticate ourselves via the gcloud API to the generated G
 ```bash
 gcloud container clusters get-credentials workshop
 ```
+
+## Links
+- pydevop's [gcloud cheat sheet](https://gist.github.com/pydevops/cffbd3c694d599c6ca18342d3625af97) markdown paper 
+
 
 ## License
 

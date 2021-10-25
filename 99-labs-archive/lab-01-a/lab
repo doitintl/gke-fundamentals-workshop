@@ -1,0 +1,79 @@
+#!/bin/bash -eu
+#
+# Copyright 2021 DoiT International.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# lab workload control script
+#
+
+# -- define & load external content -----------------------------------------------------------------------------------
+SCRIPT_PATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+. "${SCRIPT_PATH}/../scripts/lib/lab-core"
+. "${SCRIPT_PATH}/../scripts/lib/lab-init"
+
+# -- define some script relevant variables ----------------------------------------------------------------------------
+LAB_NAME=${PWD##*/} ; LAB_REGION=$(jq -Mrc '.region.cluster' "../${SET_DEFAULT_CONFIG_FILE_CLUSTER}")
+OPT_DEBUG=0 ; OPT_QUIET=0 ; OPT_NOCHECK=0
+
+# -- check scope of our script call (deploy||destroy) -----------------------------------------------------------------
+if [[ $# -eq 0 ]]; then
+    do_show_help_for_lab
+fi
+
+while test $# -gt 0
+do
+    # -- check for additional arguments (2nd argument in script call)
+    if [[ $# -gt 1 ]]; then
+        case "$2" in
+            --no-check)
+                OPT_NOCHECK=1
+                ;;
+            --debug)
+                OPT_DEBUG=1
+                ;;
+            --silent)
+                OPT_QUIET=1
+                ;;
+        esac
+    fi
+
+    # check for primary commands (1st argument in script line
+    case "$1" in
+        cluster-reset)
+            preflight "${LAB_REGION}"
+            do_cluster_retirement $OPT_DEBUG $OPT_QUIET $OPT_NOCHECK
+            do_cluster_provision $OPT_DEBUG $OPT_QUIET $OPT_NOCHECK
+            ;;
+        cluster-init)
+            preflight "${LAB_REGION}"
+            do_cluster_provision $OPT_DEBUG $OPT_QUIET $OPT_NOCHECK
+            ;;
+        cluster-destroy)
+            preflight "${LAB_REGION}"
+            do_cluster_retirement $OPT_DEBUG $OPT_QUIET $OPT_NOCHECK
+            ;;
+        deploy)
+            preflight "${LAB_REGION}"
+            do_start_deploy "${LAB_NAME}" $OPT_DEBUG $OPT_QUIET $OPT_NOCHECK
+            ;;
+        destroy)
+            preflight "${LAB_REGION}"
+            do_start_destroy "${LAB_NAME}" $OPT_DEBUG $OPT_QUIET $OPT_NOCHECK
+            ;;
+    esac
+    shift
+done
+
+# == weave & leave ====================================================================================================
+exit 0;

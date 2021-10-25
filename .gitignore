@@ -1,0 +1,59 @@
+.DS_Store
+*.so
+*.pyc
+._*
+.nfs.*
+*~
+*.orig
+*.rej
+*.exe
+.*.swp
+core
+*.cgo*.go
+*.cgo*.c
+_cgo_*
+_obj
+_test
+_testmain.go
+
+# This file includes artifacts of Go build that should not be checked in.
+# For files created by specific development environment (e.g. editor),
+# use alternative ways to exclude files from git.
+# For user-roles, set up .git/info/exclude or use a global .gitignore.
+
+# ignore all internal .env files
+# --
+**/*.env
+
+# ignore all log and dump files
+# --
+*.log
+*.chk
+*.dump
+*.dmp
+*.out
+*.tmp
+
+# ignore all IDE config sets
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+.history/
+
+# ignore feature related files
+makefile
+makefile.json
+
+# ignore local key, json-config & -cache files (make some exceptions)
+**/*.jqc
+**/*.key
+
+!scripts/lib/lab-version.key
+!scripts/assets/tpl/gke-labs-cluster.json
+!scripts/assets/tpl/gke-labs-config.json
+!gke-labs-cluster.json
+!gke-labs-config.json

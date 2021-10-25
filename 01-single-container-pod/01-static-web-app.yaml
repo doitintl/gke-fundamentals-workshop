@@ -1,0 +1,45 @@
+# Copyright 2021 DoiT International.
+#
+# Based on kubernetes dashboard, Copyright 2017 The Kubernetes Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+#
+# --
+# @spec: https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/
+# @info: Here we create a simple pod resource that describes a nginx-based static web application
+#        and provisions it within the cluster. You can access this pod from your local environment
+#        by kubectl's port-forwarding command and access the web-application on localhost:8080 ...
+#
+#        $ kubectl port-forward pod/static-web-app 8080:80 -n doit-lab-01
+# --
+#
+apiVersion: v1
+kind: Pod
+metadata:
+  name: static-web-app
+  namespace: doit-lab-01
+  labels:
+    k8s-app: static-web-app
+    k8s-scope: gke-ws-doit-lab-01
+spec:
+  containers:
+    - name: static-web-app-c
+      image: doitlabs/web-app-static:1.0.4
+      env:
+        - name: C_MESSAGE
+          value: "Stay Awhile & Listen!"
+      ports:
+        - name: http-80
+          containerPort: 80
+          protocol: TCP

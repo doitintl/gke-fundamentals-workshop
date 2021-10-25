@@ -22,34 +22,36 @@ For the use of the local development environment for all GKE/K8s relevant CLI/AP
 The preparation of the GKE cluster is one of the first steps of our workshop and is the basis for all our further activity using the local development environment of all participants. We will pave the way to our first K8s application deployment step by step in the following section, learning some of the basics of using the gcloud SDK CLI and kubectl.
 
 ## GCloud SDK Preparation
+
+This gcloud command initializes your
 ```bash
 gcloud init ;
-gcloud config set compute/zone europe-west1-b ;
 ```
 
 ## Cluster Provisioning
 
 The present gcloud command call initializes the workshop in a configuration that is as compatible as possible for all upcoming labs.
 
-_If you have already initialized the cluster, you can skip this step!_
+_If you have already initialized the cluster, you can skip this step now!_
 
 ```bash
-gcloud container clusters create workshop \
+RANDOM_CLUSTER_KEY=$RANDOM; gcloud container clusters create workshop-${RANDOM_CLUSTER_KEY} \
 --machine-type n1-standard-4 \
+--scopes "https://www.googleapis.com/auth/source.read_write,cloud-platform" \
 --node-locations europe-west1-b,europe-west1-c,europe-west1-d \
---num-nodes "1" \
 --release-channel stable \
 --region europe-west1 \
 --image-type "ubuntu" \
 --disk-type "pd-ssd" \
---disk-size "120" \
+--disk-size "60" \
+--num-nodes "1" \
 --logging=SYSTEM,WORKLOAD \
 --monitoring=SYSTEM \
 --network "default" \
---scopes "https://www.googleapis.com/auth/source.read_write,cloud-platform" \
 --addons HorizontalPodAutoscaling,HttpLoadBalancing,NodeLocalDNS \
---labels k8s-scope=kubernetes-workshop-doit,k8s-cluster=primary,environment=workshop && \
-kubectl cluster-info ;
+--labels k8s-scope=gke-workshop-doit,k8s-cluster=primary,environment=workshop && \
+kubectl get all --all-namespaces && kubectl cluster-info && \
+printf "\n%s\n\n" "-> [workshop-${RANDOM_CLUSTER_KEY}] <-" ;
 ```
 
 Now it is time to give the current user complete control over the created cluster using RBAC.

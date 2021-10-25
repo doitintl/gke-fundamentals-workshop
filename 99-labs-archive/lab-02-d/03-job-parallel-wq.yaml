@@ -1,0 +1,35 @@
+# Copyright 2021 DoiT International
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: job-03-parallel-wq
+  namespace: doit-lab-02-d
+  labels:
+    k8s-app: job-03-parallel-wq
+    k8s-scope: gke-ws-doit-lab-02-d
+spec:
+  # run this job as 5 parallel tasks at once
+  parallelism: 5
+  template:
+    metadata:
+      name: job-03-parallel-wq-tpl
+    spec:
+      containers:
+        - name: job-03-parallel-wq-c
+          image: busybox
+          command: ["/bin/sh","-c"]
+          args: ["echo 'just running a parallel-consumer job'; sleep $(shuf -i 3-9 -n 1)"]
+      restartPolicy: OnFailure

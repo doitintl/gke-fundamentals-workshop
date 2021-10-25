@@ -1,4 +1,6 @@
-# Copyright 2021 DoiT International
+# Copyright 2021 DoiT International.
+#
+# Based on kubernetes dashboard, Copyright 2017 The Kubernetes Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,21 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-apiVersion: batch/v1
-kind: Job
+apiVersion: v1
+kind: Namespace
 metadata:
-  name: job-01-simple
-  namespace: doit-lab-02-d
-  labels:
-    k8s-app: job-01-simple
-    k8s-scope: gke-ws-doit-lab-02-d
-spec:
-  template:
-    metadata:
-      name: job-01-simple
-    spec:
-      containers:
-        - name: job-01-simple
-          image: busybox
-          command: ["echo", "Running a momox job"]
-      restartPolicy: OnFailure
+  name: doit-lab-01-a

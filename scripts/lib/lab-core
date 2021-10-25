@@ -1,0 +1,479 @@
+#!/bin/bash -eu
+#
+# Copyright 2021 DoiT International.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# lab primary function library
+#
+
+SET_DEFAULT_NETWORK_ID="default"
+SET_DEFAULT_CLUSTER_IDENT="workshop"
+SET_DEFAULT_CLUSTER_AGENT="dexter-local"
+SET_DEFAULT_CLUSTER_IDENT_FILE="gke-labs-cluster.key"
+SET_DEFAULT_CONFIG_FILE_CLUSTER="gke-labs-cluster.json"
+SET_DEFAULT_CONFIG_FILE_LABS="gke-labs-config.json"
+SET_DEFAULT_CACHE_FILE_CLUSTER="gke-labs-cluster.jqc"
+SET_DEFAULT_LOG_FILE_CLUSTER_UP="gke-labs-cluster-up.log"
+SET_DEFAULT_LOG_FILE_CLUSTER_DOWN="gke-labs-cluster-down.log"
+SET_STATUS_UNKNOWN="unknown"
+SET_SPINNER='-\|/'
+SET_PID_GCLOUD_CMD=0
+
+# --
+MSG_START_CLUSTER_DEPLOY="do you want to start the \033[92;5;11mprovisioning\033[0m process of this cluster now?"
+MSG_START_DEPLOY="start\033[92;5;11m deploying\033[0m training workload to your cluster"
+MSG_ABORT_DEPLOY="deployment of training workload aborted!"
+MSG_ABORT_CLUSTER_DEPLOY="provisioning of workshop-cluster aborted!"
+MSG_START_DESTROY="start\033[91;5;11m decommission\033[0m of training workload from your cluster"
+MSG_ABORT_DESTROY="decommission of training workload aborted!"
+MSG_CHECK_GCLOUD_NETWORK_ID="current gcloud [\033[96;5;11m project-network \033[0m ]"
+MSG_CHECK_GCLOUD_PROJECT_ID="current gcloud [\033[96;5;11m project-id \033[0m      ]"
+MSG_CHECK_GCLOUD_PROJECT_NUMBER="current gcloud [\033[96;5;11m project-name\033[0m     ]"
+# --
+MSG_CHECK_CACHE_FILE_CLUSTER="validate [\033[96;5;11m ${SET_DEFAULT_CACHE_FILE_CLUSTER} \033[0m] syntax"
+MSG_CHECK_CONFIG_CLUSTER="validate [\033[96;5;11m ${SET_DEFAULT_CONFIG_FILE_CLUSTER} \033[0m] syntax"
+MSG_CHECK_CONFIG_LABS="validate [\033[96;5;11m ${SET_DEFAULT_CONFIG_FILE_LABS}  \033[0m] syntax"
+MSG_CHECK_JQ="check for [\033[96;5;11m jq-core  \033[0m] availability"
+MSG_CHECK_KUBECTL="check for [\033[96;5;11m kubectl  \033[0m] availability"
+MSG_CHECK_GSUTIL="check for [\033[96;5;11m gsutil   \033[0m] availability"
+MSG_CHECK_GCLOUD="check for [\033[96;5;11m gcloud-0 \033[0m] availability"
+MSG_CHECK_GCLOUD_AUTH="check for [\033[96;5;11m gcloud-1 \033[0m] connectivity"
+MSG_CHECK_JQ_FAIL="The 'jq' binary seems not to be available in PATH - please install 'jq' binary within your current environment by following the instructions of this url\nhttps://stedolan.github.io/jq/download/"
+MSG_CHECK_KUBECTL_FAIL="The 'kubectl' binary seems not to be available in PATH - please install 'kubectl' binary within your current environment by following the instructions of this url\nhttps://kubernetes.io/docs/tasks/tools/install-kubectl-linux/"
+MSG_CHECK_GSUTIL_FAIL="The 'gsutil' binary seems not to be available in PATH - please install 'gsutil' binary within your current environment by following the instructions of this url\nhttps://cloud.google.com/storage/docs/gsutil_install"
+MSG_CHECK_GCLOUD_FAIL="The 'gcloud' binary seems not to be available in PATH - please install 'gcloud' binary within your current environment by following the instructions of this url\nhttps://cloud.google.com/sdk/docs/install"
+MSG_CHECK_GCLOUD_AUTH_FAIL="GCloud seems not to be authenticated - please authenticate your gcloud sdk within your current environment by following the instructions of this url\nhttps://cloud.google.com/sdk/gcloud/reference/init"
+MSG_CHECK_GCLOUD_NETWORK_FAIL="Please set your 'default' network in your current gcloud project, otherwise the cluster is not able to be provisioned to our lab requirement!"
+MSG_CHECK_CONFIG_CLUSTER_FAIL="Missing or invalid config json-file '${SET_DEFAULT_CONFIG_FILE_CLUSTER}'. Please check availability or syntax for that file and come back!"
+MSG_CHECK_CONFIG_LABS_FAIL="Missing or invalid config json-file '${SET_DEFAULT_CONFIG_FILE_LABS}'. Please check availability or syntax for that file and come back!"
+MSG_CHECK_CACHE_FILE_CLUSTER_FAIL="Missing or invalid config json-file '${SET_DEFAULT_CACHE_FILE_CLUSTER}'. Please check availability or syntax for that file and come back!"
+MSG_CHECK_GCLOUD_CLUSTER_STATUS_FAIL="The cluster does not seem to be available! Try to (re)provision the workshop-cluster again by running '$./lab cluster-init' here or '$ make cluster-init' from root of this repository."
+MSG_CONFIG_FILE_CLUSTER_UPDATE_FAIL="Resulting cluster config json file seems to be invalid! Please reset your local lab environment '$./lab reset' here or '$ make labs-reset' from root of this repository."
+# --
+MSG_COLOR_INFO="\033[92;5;11m"
+MSG_COLOR_WARN="\033[93;5;11m"
+MSG_COLOR_DARK="\033[90;5;11m"
+MSG_COLOR_ERROR="\033[91;5;11m"
+MSG_COLOR_RESET="\033[0m"
+# --
+MSG_TAG_INFO="INF"
+MSG_TAG_WARN="WRN"
+MSG_TAG_ERROR="ERR"
+MSG_TAG_INP="INP"
+MSG_TAG_NONE="N/A"
+# --
+BIN_KUBECTL="kubectl"
+BIN_GSUTIL="gsutil"
+BIN_GCLOUD="gcloud"
+BIN_JQ="jq"
+# --
+SCRIPT_LOGO=$(cat ../scripts/assets/logo_v2.asc)
+SCRIPT_VERSION=$(cat ../scripts/lib/lab-version.key)
+
+do_print_msg() {
+
+    local P_MESSAGE=${1}
+    local P_MESSAGE_SUFFIX=${2}
+    local P_LEVEL=${3}
+
+    P_LEVEL_CAT=$(
+        case "${P_LEVEL}" in
+            ("0") echo "${MSG_TAG_INFO}" ;;
+            ("1") echo "${MSG_TAG_WARN}" ;;
+            ("2") echo "${MSG_TAG_ERROR}" ;;
+            (*)   echo "${MSG_TAG_NONE}" ;;
+        esac
+    );
+
+    P_LEVEL_COL=$(
+        case "${P_LEVEL}" in
+            ("0") echo "${MSG_COLOR_INFO}" ;;
+            ("1") echo "${MSG_COLOR_WARN}" ;;
+            ("2") echo "${MSG_COLOR_ERROR}" ;;
+            (*)   echo "${MSG_COLOR_RESET}" ;;
+        esac
+    );
+
+    if [ "$P_MESSAGE_SUFFIX" == "0" ]; then
+        printf "[%b] ${MSG_COLOR_DARK}///${MSG_COLOR_RESET} %b ${MSG_COLOR_DARK}///\n" "${P_LEVEL_COL}${P_LEVEL_CAT}${MSG_COLOR_RESET}" "${P_MESSAGE}"
+    else
+        printf "[%b] ${MSG_COLOR_DARK}///${MSG_COLOR_RESET} %b ${MSG_COLOR_DARK}/// result -> ${MSG_COLOR_RESET}[ %b ]\n" "${P_LEVEL_COL}${P_LEVEL_CAT}${MSG_COLOR_RESET}" "${P_MESSAGE}" "${P_LEVEL_COL}${P_MESSAGE_SUFFIX}${MSG_COLOR_RESET}"
+    fi
+}
+
+do_print_logo() {
+
+    echo -e "${MSG_COLOR_DARK}"
+    printf "%s\n\n%s" "${SCRIPT_LOGO}" "${SCRIPT_VERSION}"
+    echo -e "${MSG_COLOR_RESET}"
+}
+
+do_print_line() {
+
+    echo -e "${MSG_COLOR_DARK}"
+    printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+    echo -e "${MSG_COLOR_RESET}"
+}
+
+do_check_gcloud_auth_status() {
+
+    local error_code=0
+    gcloud config config-helper --format='value(credential.access_token)' > /dev/null 2>&1 || error_code=$?
+    if [ $error_code -eq 1 ]; then
+        do_print_msg "${MSG_CHECK_GCLOUD_AUTH}" "missing" 2
+        printf "\n%s\n\n" "${MSG_CHECK_GCLOUD_AUTH_FAIL}"
+        exit $error_code
+    else
+        do_print_msg "${MSG_CHECK_GCLOUD_AUTH}" "success" 0
+    fi
+}
+
+do_check_network_status() {
+
+    local P_REGION=${1}
+    local NETWORK_ID="${SET_STATUS_UNKNOWN}"; NETWORK_ID=$(gcloud compute networks subnets list --filter="region:${P_REGION}" --format=json | jq -Mrc  '.[] | .name' | sed 's/[[:space:]]//g')
+
+    if [ "${NETWORK_ID}" == "${SET_DEFAULT_NETWORK_ID}" ]; then
+        do_print_msg "${MSG_CHECK_GCLOUD_NETWORK_ID}" "${NETWORK_ID}" 0
+    else
+        do_print_msg "${MSG_CHECK_GCLOUD_NETWORK_ID}" "${NETWORK_ID}" 2
+        printf "\n%s\n\n" "${MSG_CHECK_GCLOUD_NETWORK_FAIL}"
+        exit 1
+    fi
+}
+
+do_check_gcloud_status() {
+
+    local PROJECT_ID="${SET_STATUS_UNKNOWN}"; PROJECT_ID=$(gcloud info --format='value(config.project)')
+    local PROJECT_NUMBER="${SET_STATUS_UNKNOWN}"; PROJECT_NUMBER=$(gcloud projects list --filter="project_id:${PROJECT_ID}"  --format='value(project_number)')
+
+    do_print_msg "${MSG_CHECK_GCLOUD_PROJECT_ID}" "${PROJECT_NUMBER}" 0
+    do_print_msg "${MSG_CHECK_GCLOUD_PROJECT_NUMBER}" "${PROJECT_ID}" 0
+}
+
+do_check_config_json() {
+
+    if jq empty "../${SET_DEFAULT_CONFIG_FILE_CLUSTER}" 2>/dev/null; then
+        do_print_msg "${MSG_CHECK_CONFIG_CLUSTER}" "success" 0
+    else
+        do_print_msg "${MSG_CHECK_CONFIG_CLUSTER_FAIL}" "failed" 2
+        exit 1
+    fi
+
+    if jq empty "../${SET_DEFAULT_CONFIG_FILE_LABS}" 2>/dev/null; then
+        do_print_msg "${MSG_CHECK_CONFIG_LABS}" "success" 0
+    else
+        do_print_msg "${MSG_CHECK_CONFIG_LABS_FAIL}" "failed" 2
+        exit 1
+    fi
+}
+
+do_check_jq() {
+
+    if command -v ${BIN_JQ} > /dev/null 2>&1; then
+        do_print_msg "${MSG_CHECK_JQ}" "success" 0
+    else
+        do_print_msg "${MSG_CHECK_JQ}" "missing" 2
+        printf "\n%s\n\n" "${MSG_CHECK_JQ_FAIL}"
+        exit 1
+    fi
+}
+
+do_check_kubectl() {
+
+    if command -v ${BIN_KUBECTL} > /dev/null 2>&1; then
+        do_print_msg "${MSG_CHECK_KUBECTL}" "success" 0
+    else
+        do_print_msg "${MSG_CHECK_KUBECTL}" "missing" 2
+        printf "\n%s\n\n" "${MSG_CHECK_KUBECTL_FAIL}"
+        exit 1
+    fi
+}
+
+do_check_gsutil() {
+
+    if command -v ${BIN_GSUTIL} > /dev/null 2>&1; then
+        do_print_msg "${MSG_CHECK_GSUTIL}" "success" 0
+    else
+        do_print_msg "${MSG_CHECK_GSUTIL}" "missing" 2
+        printf "\n%s\n\n" "${MSG_CHECK_GSUTIL_FAIL}"
+        exit 1
+    fi
+}
+
+do_check_gcloud() {
+
+    if command -v ${BIN_GCLOUD} > /dev/null 2>&1; then
+        do_print_msg "${MSG_CHECK_GCLOUD}" "success" 0
+    else
+        do_print_msg "${MSG_CHECK_GCLOUD}" "missing" 2
+        printf "\n%s\n\n" "${MSG_CHECK_GCLOUD_FAIL}"
+        exit 1
+    fi
+}
+
+do_check_cluster() {
+
+    local P_REGION=${1}
+    local P_SILENT=${2:-1}
+
+    # -- generate cluster info cache file
+    # gcloud container clusters list --region=europe-west1 --format=json > "../cache/001-two-clusters.log"
+    gcloud container clusters list --region="${P_REGION}" --format=json > "../cache/${SET_DEFAULT_CACHE_FILE_CLUSTER}"
+
+    # -- validate json structure of previously generated cluster cache file
+    if ! jq empty "../cache/${SET_DEFAULT_CACHE_FILE_CLUSTER}" 2>/dev/null; then
+        do_print_msg "${MSG_CHECK_CACHE_FILE_CLUSTER}" "failed" 2
+        printf "\n%s\n\n" "${MSG_CHECK_CACHE_FILE_CLUSTER_FAIL}"
+        exit 1
+    fi
+
+    # -- try to identify our workshop cluster (`resourceLabels.k8s-agent-scope=previously-generated-cluster-name (e.g. workshop-26122)`)
+    CLUSTER_IDENT_CURRENT=$(cat "../${SET_DEFAULT_CLUSTER_IDENT_FILE}")
+    local CLUSTER_IDENT="${SET_STATUS_UNKNOWN}"; CLUSTER_IDENT=$(jq -Mrc  '.[] | .resourceLabels."k8s-agent-scope"' "../cache/${SET_DEFAULT_CACHE_FILE_CLUSTER}")
+    if [ "${CLUSTER_IDENT}" == "${CLUSTER_IDENT_CURRENT}" ]; then
+
+        if [ "${P_SILENT}" == 1 ]; then
+            echo "true"; return 0
+        fi
+
+        do_print_msg "regional gke-cluster [\033[96;5;11m ${CLUSTER_IDENT_CURRENT} \033[0m] seems to be ready" "available" 0
+    else
+
+        if [ "${P_SILENT}" == 1 ]; then
+            echo "false"; return 0
+        fi
+
+        do_print_msg "regional gke-cluster [\033[96;5;11m ${CLUSTER_IDENT_CURRENT} \033[0m] seems not to be present" "missing" 2
+        printf "\n%s\n\n" "${MSG_CHECK_GCLOUD_CLUSTER_STATUS_FAIL}"
+        exit 1
+    fi
+}
+
+do_cluster_retirement() {
+
+    local C_CLUSTER_REGION="${SET_STATUS_UNKNOWN}";C_CLUSTER_REGION=$(jq -Mrc '.region.cluster' "../${SET_DEFAULT_CONFIG_FILE_CLUSTER}")
+
+    # -- check existing cluster config first --------------------------------------------------------------------------
+    if [ -f "../${SET_DEFAULT_CLUSTER_IDENT_FILE}" ]; then
+        CLUSTER_IDENT_CURRENT=$(cat "../${SET_DEFAULT_CLUSTER_IDENT_FILE}")
+        CLUSTER_DEEP_CHECK_RESULT=$(do_check_cluster "${C_CLUSTER_REGION}" 1)
+        if [ "${CLUSTER_DEEP_CHECK_RESULT}" == "true" ]; then
+            read -p "$(echo -e "[${MSG_COLOR_WARN}""${MSG_TAG_WARN}""${MSG_COLOR_RESET}] ${MSG_COLOR_DARK}///${MSG_COLOR_RESET} regional gke-cluster [ ${MSG_COLOR_WARN}""${CLUSTER_IDENT_CURRENT}""${MSG_COLOR_RESET} ] will be destroyed - do you want to proceed? ${MSG_COLOR_DARK}/// ${MSG_COLOR_RESET} [y/n]? ")" -n 1 -r; echo
+            if [[ ! $REPLY =~ ^[Yy]$ ]]
+            then
+                printf "\n<abort>\n"; exit 1;
+            else
+                # -- exec cluster delete command for current workshop-cluster
+                echo "Y" | gcloud container clusters delete --region="${C_CLUSTER_REGION}" "${CLUSTER_IDENT_CURRENT}" > "../logs/${SET_DEFAULT_LOG_FILE_CLUSTER_DOWN}" 2>&1 &
+                # -- show loading spinner until background process finished gracefully
+                SET_PID_GCLOUD_CMD=$!
+                do_print_msg "ignite regional gke-cluster [\033[96;5;11m ${CLUSTER_IDENT_CURRENT} \033[0m] removal process @pid=[\033[96;5;11m ${SET_PID_GCLOUD_CMD} \033[0m ]" 0 0; do_print_line
+                i=0 ; while kill -0 ${SET_PID_GCLOUD_CMD} 2>/dev/null
+                do
+                    i=$(( (i+1) %4 ))
+                    # shellcheck disable=SC2059
+                    printf "\r[${P_LEVEL_COL}INF${MSG_COLOR_RESET}] ${MSG_COLOR_DARK}///${MSG_COLOR_RESET} exec regional gke-cluster delete for [\033[96;5;11m ${CLUSTER_IDENT_CURRENT} \033[0m] ... please wait (2-4m) ${SET_SPINNER:$i:1}"
+                    sleep .1
+                done
+                printf "\n"; do_print_msg "regional gke-cluster [\033[96;5;11m ${CLUSTER_IDENT_CURRENT} \033[0m] was successfully removed from your resources" "success" 0;
+                # -- remove old cluster ident file
+                rm -f "../${SET_DEFAULT_CLUSTER_IDENT_FILE}"
+                do_print_line
+            fi
+        fi
+    fi
+}
+
+do_cluster_provision() {
+
+    local C_CLUSTER_RANDOM_ID="${SET_STATUS_UNKNOWN}";C_CLUSTER_RANDOM_ID=${RANDOM}
+    local C_CLUSTER_LOCAL_AGENT="${SET_STATUS_UNKNOWN}";C_CLUSTER_LOCAL_AGENT="${SET_DEFAULT_CLUSTER_AGENT}-$(whoami)"
+    local C_CLUSTER_RANDOM_NAME="${SET_STATUS_UNKNOWN}";C_CLUSTER_RANDOM_NAME=$(printf "${SET_DEFAULT_CLUSTER_IDENT}-%s" ${C_CLUSTER_RANDOM_ID})
+    local C_CLUSTER_MACHINE_TYPE="${SET_STATUS_UNKNOWN}";C_CLUSTER_MACHINE_TYPE=$(jq -Mrc '.spec."machine-type"' "../${SET_DEFAULT_CONFIG_FILE_CLUSTER}")
+    local C_CLUSTER_IMAGE_TYPE="${SET_STATUS_UNKNOWN}";C_CLUSTER_IMAGE_TYPE=$(jq -Mrc '.spec."image-type"' "../${SET_DEFAULT_CONFIG_FILE_CLUSTER}")
+    local C_CLUSTER_REGION="${SET_STATUS_UNKNOWN}";C_CLUSTER_REGION=$(jq -Mrc '.region.cluster' "../${SET_DEFAULT_CONFIG_FILE_CLUSTER}")
+    local C_CLUSTER_NODES_ZONES_CSV="${SET_STATUS_UNKNOWN}";C_CLUSTER_NODES_ZONES_CSV=$(jq -Mrc '.region.nodes[]' "../${SET_DEFAULT_CONFIG_FILE_CLUSTER}" | xargs | sed -e 's/ /,/g')
+    local C_CLUSTER_NODES_MIN="${SET_STATUS_UNKNOWN}";C_CLUSTER_NODES_MIN=$(jq -Mrc '.spec."nodes-per-region-min"' "../${SET_DEFAULT_CONFIG_FILE_CLUSTER}")
+    local C_CLUSTER_NODES_MAX="${SET_STATUS_UNKNOWN}";C_CLUSTER_NODES_MAX=$(jq -Mrc '.spec."nodes-per-region-max"' "../${SET_DEFAULT_CONFIG_FILE_CLUSTER}")
+    local C_CLUSTER_NODES_DISK_SIZE="${SET_STATUS_UNKNOWN}";C_CLUSTER_NODES_DISK_SIZE=$(jq -Mrc '.spec."disk-size"' "../${SET_DEFAULT_CONFIG_FILE_CLUSTER}")
+    local C_CLUSTER_NODES_DISK_TYPE="${SET_STATUS_UNKNOWN}";C_CLUSTER_NODES_DISK_TYPE=$(jq -Mrc '.spec."disk-type"' "../${SET_DEFAULT_CONFIG_FILE_CLUSTER}")
+    local C_CLUSTER_ADDONS_CSV="${SET_STATUS_UNKNOWN}";C_CLUSTER_ADDONS_CSV=$(jq -Mrc '.spec.addons[]' "../${SET_DEFAULT_CONFIG_FILE_CLUSTER}" | xargs | sed -e 's/ /,/g')
+
+    # -- check existing cluster config first --------------------------------------------------------------------------
+    if [ -f "../${SET_DEFAULT_CLUSTER_IDENT_FILE}" ]; then
+        CLUSTER_IDENT_CURRENT=$(cat "../${SET_DEFAULT_CLUSTER_IDENT_FILE}")
+        CLUSTER_DEEP_CHECK_RESULT=$(do_check_cluster "${C_CLUSTER_REGION}" 1)
+        if [ "${CLUSTER_DEEP_CHECK_RESULT}" == "true" ]; then
+            read -p "$(echo -e "[${MSG_COLOR_WARN}""${MSG_TAG_WARN}""${MSG_COLOR_RESET}] ${MSG_COLOR_DARK}///${MSG_COLOR_RESET} regional gke-cluster [\033[96;5;11m ${CLUSTER_IDENT_CURRENT} \033[0m] already available! Do you want to redeploy this cluster? ${MSG_COLOR_DARK}/// ${MSG_COLOR_RESET} [y/n]? ")" -n 1 -r; echo
+            if [[ ! $REPLY =~ ^[Yy]$ ]]
+            then
+                printf "\n<abort>\n"; exit 1;
+            else
+                do_cluster_retirement
+            fi
+        fi
+    fi
+
+    do_print_msg "set cluster regional node zones" "${C_CLUSTER_NODES_ZONES_CSV}" 0;
+    do_print_msg "set cluster addons             " "${C_CLUSTER_ADDONS_CSV}" 0;
+    do_print_msg "set cluster machine-type       " "${C_CLUSTER_MACHINE_TYPE}" 0;
+    do_print_msg "set cluster image-type         " "${C_CLUSTER_IMAGE_TYPE}" 0;
+    do_print_msg "set cluster nodes disk-type    " "${C_CLUSTER_NODES_DISK_TYPE}" 0;
+    do_print_msg "set cluster nodes disk-size    " "${C_CLUSTER_NODES_DISK_SIZE}" 0;
+    do_print_msg "set cluster min/max node-count " "${C_CLUSTER_NODES_MIN}/${C_CLUSTER_NODES_MAX}" 0;
+    do_print_msg "set cluster unique-identifier  " "${C_CLUSTER_RANDOM_NAME}" 0; do_print_line
+
+    # -- final confirmation task before deployment starts
+    read -p "$(echo -e "[${MSG_COLOR_INFO}""${MSG_TAG_INP}""${MSG_COLOR_RESET}] ${MSG_COLOR_DARK}///${MSG_COLOR_RESET} ${MSG_START_CLUSTER_DEPLOY} ${MSG_COLOR_DARK}/// -> ${MSG_COLOR_RESET}[ ${MSG_COLOR_INFO}""${C_CLUSTER_RANDOM_NAME}""${MSG_COLOR_RESET} ] ${MSG_COLOR_DARK}<-${MSG_COLOR_RESET} [y/n]? ")" -n 1 -r; echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]
+    then
+        do_print_msg "${MSG_ABORT_CLUSTER_DEPLOY}" "${C_CLUSTER_RANDOM_NAME}" 2; exit 1
+    else
+        SET_UPDATED_CONFIG_FILE_CLUSTER=$(jq ".spec.\"unique-id\"=\"${C_CLUSTER_RANDOM_ID}\"" "../${SET_DEFAULT_CONFIG_FILE_CLUSTER}") && echo "${SET_UPDATED_CONFIG_FILE_CLUSTER}" > "../${SET_DEFAULT_CONFIG_FILE_CLUSTER}"
+        SET_UPDATED_CONFIG_FILE_CLUSTER=$(jq ".metadata.\"name\"=\"${C_CLUSTER_RANDOM_NAME}\"" "../${SET_DEFAULT_CONFIG_FILE_CLUSTER}") && echo "${SET_UPDATED_CONFIG_FILE_CLUSTER}" > "../${SET_DEFAULT_CONFIG_FILE_CLUSTER}"
+        SET_UPDATED_CONFIG_FILE_CLUSTER=$(jq ".metadata.\"agent\"=\"${C_CLUSTER_LOCAL_AGENT}\"" "../${SET_DEFAULT_CONFIG_FILE_CLUSTER}") && echo "${SET_UPDATED_CONFIG_FILE_CLUSTER}" > "../${SET_DEFAULT_CONFIG_FILE_CLUSTER}"
+        if jq empty "../${SET_DEFAULT_CONFIG_FILE_CLUSTER}" 2>/dev/null; then
+            # -- persist current cluster identifier to local cluster-key file now
+            echo "${C_CLUSTER_RANDOM_NAME}" > "../${SET_DEFAULT_CLUSTER_IDENT_FILE}"
+            # -- start provisioning process (enforce background run) --------------------------------------------------
+            gcloud container clusters create "${C_CLUSTER_RANDOM_NAME}" \
+                    --machine-type "${C_CLUSTER_MACHINE_TYPE}" \
+                    --scopes "https://www.googleapis.com/auth/source.read_write,cloud-platform" \
+                    --region "${C_CLUSTER_REGION}" \
+                    --node-locations "${C_CLUSTER_NODES_ZONES_CSV}" \
+                    --release-channel stable \
+                    --image-type "${C_CLUSTER_IMAGE_TYPE}" \
+                    --disk-type "${C_CLUSTER_NODES_DISK_TYPE}" \
+                    --disk-size "${C_CLUSTER_NODES_DISK_SIZE}" \
+                    --num-nodes "1" \
+                    --max-nodes "${C_CLUSTER_NODES_MAX}" \
+                    --min-nodes "${C_CLUSTER_NODES_MIN}" \
+                    --logging=SYSTEM,WORKLOAD \
+                    --monitoring=SYSTEM \
+                    --network "default" \
+                    --addons "${C_CLUSTER_ADDONS_CSV}" \
+                    --labels k8s-env=workshop,k8s-agent-scope="${C_CLUSTER_RANDOM_NAME}",k8s-agent-ident="${C_CLUSTER_LOCAL_AGENT}",k8s-scope=gke-workshop-doit,k8s-cluster=primary > "../logs/${SET_DEFAULT_LOG_FILE_CLUSTER_UP}" 2>&1 &
+            # -- show loading spinner until background process finished gracefully
+            SET_PID_GCLOUD_CMD=$!
+            do_print_msg "ignite regional gke-cluster [\033[96;5;11m ${C_CLUSTER_RANDOM_NAME} \033[0m] build up process @pid=[\033[96;5;11m ${SET_PID_GCLOUD_CMD} \033[0m ]" 0 0; do_print_line
+            i=0 ; while kill -0 ${SET_PID_GCLOUD_CMD} 2>/dev/null
+            do
+                i=$(( (i+1) %4 ))
+                # shellcheck disable=SC2059
+                printf "\r[${P_LEVEL_COL}INF${MSG_COLOR_RESET}] ${MSG_COLOR_DARK}///${MSG_COLOR_RESET} exec regional gke-cluster provisioning for [\033[96;5;11m ${C_CLUSTER_RANDOM_NAME} \033[0m] ... please wait (2-5m) ${SET_SPINNER:$i:1}"
+                sleep .1
+            done
+            # -- check cluster availability by scanning cluster (@todo: no support for multiple cluster output)
+            printf "\n"; do_print_msg "regional gke-cluster [\033[96;5;11m ${C_CLUSTER_RANDOM_NAME} \033[0m] was successfully launched - start a connection test ..." "success" 0;
+            CLUSTER_DEEP_CHECK_RESULT=$(do_check_cluster "${C_CLUSTER_REGION}" 1)
+            if [ "${CLUSTER_DEEP_CHECK_RESULT}" == "true" ]; then
+                printf "\n"; do_print_msg "regional gke-cluster [\033[96;5;11m ${C_CLUSTER_RANDOM_NAME} \033[0m] available!" "success" 0;
+            fi
+            do_print_line
+
+        else
+            do_print_msg "${MSG_CONFIG_FILE_CLUSTER_UPDATE_FAIL}" "invalid" 2;  exit 1
+            exit 1
+        fi
+    fi
+}
+
+do_start_deploy() {
+
+    local P_REGION=${1}
+    local P_LAB_CLUSTER=${2}
+    local P_LAB_NAME=${3}
+
+    # -- check cluster availability first
+    CLUSTER_DEEP_CHECK_RESULT=$(do_check_cluster "${P_REGION}" 1)
+    if [ "${CLUSTER_DEEP_CHECK_RESULT}" == "true" ]; then
+        # -- final user input before deployment process starts
+        read -p "$(echo -e "[${MSG_COLOR_INFO}""${MSG_TAG_INP}""${MSG_COLOR_RESET}] ${MSG_COLOR_DARK}///${MSG_COLOR_RESET} ${MSG_START_DEPLOY} [ ${MSG_COLOR_INFO}${P_LAB_CLUSTER}${MSG_COLOR_RESET} ] ${MSG_COLOR_DARK}/// workload -> ${MSG_COLOR_RESET}[ ${MSG_COLOR_INFO}""${P_LAB_NAME}""${MSG_COLOR_RESET} ] ${MSG_COLOR_DARK}<-${MSG_COLOR_RESET} [y/n]? ")" -n 1 -r; echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]
+        then
+            do_print_msg "${MSG_ABORT_DEPLOY}" "${P_LAB_NAME}" 2;  exit 1
+        else
+            do_deploy "${P_LAB_NAME}"
+        fi
+    else
+        printf "\n"; do_print_msg "regional gke-cluster [\033[96;5;11m ${P_LAB_CLUSTER} \033[0m] not available / not accessible! <abort>" "error" 3;
+    fi
+}
+
+do_start_destroy() {
+
+    local P_REGION=${1}
+    local P_LAB_CLUSTER=${2}
+    local P_LAB_NAME=${3}
+
+    # -- check cluster availability first
+    CLUSTER_DEEP_CHECK_RESULT=$(do_check_cluster "${P_REGION}" 1)
+    if [ "${CLUSTER_DEEP_CHECK_RESULT}" == "true" ]; then
+        # -- final user input before regression process starts
+        read -p "$(echo -e "[${MSG_COLOR_INFO}""${MSG_TAG_INP}""${MSG_COLOR_RESET}] ${MSG_COLOR_DARK}///${MSG_COLOR_RESET} ${MSG_START_DESTROY} [ ${MSG_COLOR_INFO}${P_LAB_CLUSTER}${MSG_COLOR_RESET} ] ${MSG_COLOR_DARK}/// workload -> ${MSG_COLOR_RESET}[ ${MSG_COLOR_INFO}""${P_LAB_NAME}""${MSG_COLOR_RESET} ] ${MSG_COLOR_DARK}<-${MSG_COLOR_RESET} [y/n]? ")" -n 1 -r; echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]
+        then
+            do_print_msg "${MSG_ABORT_DESTROY}" "${P_LAB_NAME}" 2;  exit 1
+        else
+            do_destroy "${P_LAB_NAME}"
+        fi
+    else
+            printf "\n"; do_print_msg "regional gke-cluster [\033[96;5;11m ${P_LAB_CLUSTER} \033[0m] not available / not accessible! <abort>" "error" 3;
+    fi
+}
+
+do_deploy () {
+
+    local P_LAB_NAME=${1}
+    local C_PATH=${PWD##*/}
+    if [ "${P_LAB_NAME}" != "${C_PATH}" ]; then
+        # shellcheck disable=SC2164
+        cd "$(find ../ -name "${P_LAB_NAME}.key" -execdir pwd \; -quit)"
+    fi
+
+    do_print_msg "${MSG_START_DEPLOY}" "${P_LAB_NAME}" 0 ; do_print_line
+
+    ${BIN_KUBECTL:-kubectl} apply -f .
+}
+
+do_destroy () {
+    
+    local P_LAB_NAME=${1}
+    local C_PATH=${PWD##*/}
+    if [ "${P_LAB_NAME}" != "${C_PATH}" ]; then
+        # shellcheck disable=SC2164
+        cd "$(find ../ -name "${P_LAB_NAME}.key" -execdir pwd \; -quit)"
+    fi
+
+    do_print_msg "${MSG_START_DESTROY}" "${P_LAB_NAME}" 0 ; do_print_line
+
+    ${BIN_KUBECTL:-kubectl} delete -f .
+}
+
+do_show_help_for_lab() {
+
+    preflight_logo
+
+    printf "This script helps you to start the respective lab in an automated way,\nto identify the status of the cluster and to check the local development\nenvironment for compatibility with the lab. the following commands are\navailable in the current version:\n\n"
+    printf "%b./%blab%b cluster-init\t %binitialize your gke-workshop cluster%b\n" "${MSG_COLOR_DARK}" "${MSG_COLOR_INFO}" "${MSG_COLOR_RESET}" "${MSG_COLOR_DARK}" "${MSG_COLOR_RESET}"
+    printf "%b./%blab%b cluster-destroy\t %bremove your gke-workshop cluster%b\n" "${MSG_COLOR_DARK}" "${MSG_COLOR_INFO}" "${MSG_COLOR_RESET}" "${MSG_COLOR_DARK}" "${MSG_COLOR_RESET}"
+    printf "%b./%blab%b cluster-reset\t %breset cluster environment (re-deploy your workshop cluster)%b\n" "${MSG_COLOR_DARK}" "${MSG_COLOR_INFO}" "${MSG_COLOR_RESET}" "${MSG_COLOR_DARK}" "${MSG_COLOR_RESET}"
+    printf "%b./%blab%b deploy\t\t %bdeploy bcurrent path workload to your gke-cluster%b\n" "${MSG_COLOR_DARK}" "${MSG_COLOR_INFO}" "${MSG_COLOR_RESET}" "${MSG_COLOR_DARK}" "${MSG_COLOR_RESET}"
+    printf "%b./%blab%b destroy\t\t %bremove current path workload from your gke-cluster%b\n" "${MSG_COLOR_DARK}" "${MSG_COLOR_INFO}" "${MSG_COLOR_RESET}" "${MSG_COLOR_DARK}" "${MSG_COLOR_RESET}"
+    printf "\n\n"
+    printf "The following additional arguments are usable:\n\n"
+    printf "%b--%bno-check%b \t\t %bdisable preflight checks (binary checks, gcloud auth-check ...) for every command%b\n" "${MSG_COLOR_DARK}" "${MSG_COLOR_INFO}" "${MSG_COLOR_RESET}" "${MSG_COLOR_DARK}" "${MSG_COLOR_RESET}"
+    printf "%b--%bsilent%b \t\t %bdisable extensive output and set debug lines to minimum for every command%b\n" "${MSG_COLOR_DARK}" "${MSG_COLOR_INFO}" "${MSG_COLOR_RESET}" "${MSG_COLOR_DARK}" "${MSG_COLOR_RESET}"
+}

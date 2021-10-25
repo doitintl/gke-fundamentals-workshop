@@ -14,5 +14,5 @@ metadata:
     k8s-app: operator-test
     k8s-scope: gke-ws-doit-lab-01-c
 data:
-  index.html: hi momox - you're great!
+  index.html: Stay Awhile and Listen!
 

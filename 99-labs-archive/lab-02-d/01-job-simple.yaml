@@ -15,20 +15,18 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: job-03-parallel-wq
+  name: job-01-simple
   namespace: doit-lab-02-d
   labels:
-    k8s-app: job-03-parallel-wq
+    k8s-app: job-01-simple
     k8s-scope: gke-ws-doit-lab-02-d
 spec:
-  parallelism: 5
   template:
     metadata:
-      name: consumer
+      name: job-01-simple-tpl
     spec:
       containers:
-        - name: consumer
+        - name: job-01-simple-c
           image: busybox
-          command: ["/bin/sh","-c"]
-          args: ["echo 'consuming another momox message'; sleep $(shuf -i 5-10 -n 1)"]
+          command: ["echo", "just running a simple single-call job"]
       restartPolicy: OnFailure
