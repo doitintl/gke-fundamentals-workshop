@@ -30,7 +30,7 @@ spec:
   # If you set the type field to NodePort, the Kubernetes control plane allocates a port from a (default)
   # range 30000-32767. Each node proxies that port (the same port number on every Node) into your Service.
   # You can access your service by calling the nodes external-ip and your nodePort (e.g. 90.1.1.1:30000).
-  # (!) don't forget to open your firewall for that tcp port:
+  # (!) don't forget to open your firewall for that specific tcp (node) port:
   #     gcloud compute firewall-rules create my-node-port-opened-service --allow tcp:30000
   #
   type: NodePort
