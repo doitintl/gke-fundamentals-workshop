@@ -35,8 +35,7 @@ fi
 
 do_show_help_for_workload() {
 
-
-    LAB_HELP_RAW=$(cat ./"${LAB_NAME}".key)
+    LAB_HELP_RAW=$(cat ./lab_postcmds.txt)
     do_print_line ; printf "%b\n" "${LAB_HELP_RAW}" ; do_print_line ;
 }
 
