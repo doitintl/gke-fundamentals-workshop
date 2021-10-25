@@ -5,12 +5,15 @@
 2. You can also permanently display the current log stream of the pod in question in your terminal using the following command:
 
 2.1 logs of static web application (container=001-static-web-app-c)
+
 -> $ kubectl logs -f -l k8s-app=static-web-app-advanced -n doit-lab-02 -c 001-static-web-app-c
 
 2.2 logs of web applications sidecar (container=002-static-web-app-sidecar-c)
+
 -> $ kubectl logs -f -l k8s-app=static-web-app-advanced -n doit-lab-02 -c 001-static-web-app-c
 
 2.2 logs of pod's primary init container (container=000-static-web-app-advanced-init-c)
+
 -> $ kubectl logs -f -l k8s-app=static-web-app-advanced -n doit-lab-02 -c 001-static-web-app-c
 
 3. You can access this pod from your local environment by kubectl port-forwarding & access this web-app @localhost:8080

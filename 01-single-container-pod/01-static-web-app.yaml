@@ -45,11 +45,11 @@ spec:
   # --
   containers:
     - name: static-web-app-c
-      image: doitlabs/web-app-static-blue:1.0.5
+      image: doitlabs/web-app-static:1.0.5
       env:
-        - name: C_MESSAGE
-          value: "Stay Awhile & Listen :)"
+      - name: C_MESSAGE
+        value: "Stay Awhile & Listen :)"
       ports:
-        - name: http-80
-          containerPort: 80
-          protocol: TCP
+      - name: http-80
+        containerPort: 80
+        protocol: TCP
