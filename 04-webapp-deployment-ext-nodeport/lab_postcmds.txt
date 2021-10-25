@@ -1,0 +1,23 @@
+1. You can check the state of Pods at any time with the following kubectl command:
+
+-> $ kubectl get pods -n doit-lab-04
+
+2. You can check your deployment with the following kubectl command:
+
+-> $ kubectl get deployments -n doit-lab-04
+
+3. You can check the corresponding service endpoint by the following kubectl command:
+
+-> $ kubectl get services -n doit-lab-04
+
+4. You can check your nodes external IP addresses by entering the following command:
+
+-> $ kubectl get nodes -o jsonpath='{ $.items[*].status.addresses[?(@.type=="ExternalIP")].address }' -n doit-lab-04 | tr ' ' '\n'
+
+5. To access your service by NodePort you have to allow tcp-access to your port-definition (e.g. 30000)
+
+-> $ gcloud compute firewall-rules create my-node-port-opened-service --allow tcp:30000
+
+6. Now you can access your service calling one of your external node-IPs:30000 in your browser
+
+-> http://<one-of-your-external-node-ips>:<your-node-port>
