@@ -12,7 +12,7 @@
 
 4. You can check your nodes external IP addresses by entering the following command:
 
--> $ kubectl get nodes -o jsonpath='{ $.items[*].status.addresses[?(@.type=="ExternalIP")].address }' -n doit-lab-04 | tr ' ' '\n'
+-> $ kubectl get nodes -o jsonpath='{ $.items[*].status.addresses[?(@.type=="ExternalIP")].address }' -n doit-lab-04 | tr ' ' '\\n'
 
 5. To access your service by NodePort you have to allow tcp-access to your port-definition (e.g. 30000)
 
