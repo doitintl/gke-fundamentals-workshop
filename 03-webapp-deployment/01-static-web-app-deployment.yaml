@@ -20,7 +20,7 @@
 #        and provisions it within the cluster. You can access this app from your local environment
 #        by kubectl's port-forwarding command and access the web-application on localhost:8080 ...
 #
-#        $ kubectl port-forward deployment/static-web-app 8080:80 -n doit-lab-03
+#        $ kubectl port-forward service/static-web-app-service 8080:8080 -n doit-lab-03
 # --
 #
 apiVersion: apps/v1
@@ -49,7 +49,7 @@ spec:
     spec:
       containers:
       - name: static-web-app-c
-        image: doitlabs/web-app-static-blue:1.0.5
+        image: doitlabs/web-app-static:1.0.5
         env:
         - name: C_MESSAGE
-          value: "Stay Awhile & Listen :)"
+          value: "Stay Awhile & Listen; Lab-3"
