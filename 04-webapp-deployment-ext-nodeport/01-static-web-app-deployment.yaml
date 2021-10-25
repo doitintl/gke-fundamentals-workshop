@@ -27,17 +27,17 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: static-web-app-deployment
-  namespace: doit-lab-03
+  namespace: doit-lab-04
   labels:
     k8s-app: static-web-app
-    k8s-scope: gke-ws-doit-lab-03
+    k8s-scope: gke-ws-doit-lab-04
 spec:
   #
   # The specs for a deployment here consist of the three most important key sections: replicas, selector and template;
   # In 'template' we find another spec section that describes the actual web application (similar to our pod example);
   # We will also indirectly address the ReplicaSet as a resource in k8s in this example by setting the replicas to n>1.
   # --
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       k8s-app: static-web-app
@@ -45,11 +45,11 @@ spec:
     metadata:
       labels:
         k8s-app: static-web-app
-        k8s-scope: gke-ws-doit-lab-03
+        k8s-scope: gke-ws-doit-lab-04
     spec:
       containers:
       - name: static-web-app-c
         image: doitlabs/web-app-static:1.0.5
         env:
         - name: C_MESSAGE
-          value: "Stay Awhile & Listen; Lab-3"
+          value: "Stay Awhile & Listen; Lab-4"

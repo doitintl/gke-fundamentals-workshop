@@ -1,0 +1,43 @@
+# Copyright 2021 DoiT International.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+#
+# --
+# @spec: https://kubernetes.io/docs/reference/kubernetes-api/service-resources/service-v1/
+# @info: https://kubernetes.io/docs/concepts/services-networking/service/
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: static-web-app-service
+  namespace: doit-lab-04
+  labels:
+    k8s-app: static-web-app
+    k8s-scope: gke-ws-doit-lab-04
+spec:
+  # --
+  # If you set the type field to NodePort, the Kubernetes control plane allocates a port from a (default)
+  # range 30000-32767. Each node proxies that port (the same port number on every Node) into your Service.
+  # You can access your service by calling the nodes external-ip and your nodePort (e.g. 90.1.1.1:30000).
+  # (!) don't forget to open your firewall for that tcp port:
+  #     gcloud compute firewall-rules create my-node-port-opened-service --allow tcp:30000
+  #
+  type: NodePort
+  selector:
+    k8s-app: static-web-app
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 80
+    nodePort: 30000
