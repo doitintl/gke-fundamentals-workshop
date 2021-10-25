@@ -1,7 +1,5 @@
 # Copyright 2021 DoiT International.
 #
-# Based on kubernetes dashboard, Copyright 2017 The Kubernetes Authors.
-#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -17,6 +15,13 @@
 #
 # --
 # @spec: https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/
+#
+# @warn: please be aware of the limits of pod-resources in GKE/k8s regarding declarative updates!
+#        pod updates may not change fields other than `spec.containers[*].image`,
+#                                                     `spec.initContainers[*].image`,
+#                                                     `spec.activeDeadlineSeconds`,
+#                                                     `spec.tolerations` (only additions to existing toleration's)
+#
 # @info: Here we create a simple pod resource that describes a nginx-based static web application
 #        and provisions it within the cluster. You can access this pod from your local environment
 #        by kubectl's port-forwarding command and access the web-application on localhost:8080 ...
@@ -33,12 +38,17 @@ metadata:
     k8s-app: static-web-app
     k8s-scope: gke-ws-doit-lab-01
 spec:
+  #
+  # This is our primary container, which carries a simple static web application and opens a dedicated
+  # container port (http-80). We can describe some content elements of the application by means of env-
+  # variables, e.g. the variable 'C_MESSAGE' overwrites the default welcome text of the application.
+  # --
   containers:
     - name: static-web-app-c
-      image: doitlabs/web-app-static:1.0.4
+      image: doitlabs/web-app-static-blue:1.0.5
       env:
         - name: C_MESSAGE
-          value: "Stay Awhile & Listen!"
+          value: "Stay Awhile & Listen :)"
       ports:
         - name: http-80
           containerPort: 80

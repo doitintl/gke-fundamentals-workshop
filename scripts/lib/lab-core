@@ -439,8 +439,7 @@ do_deploy () {
     local P_LAB_NAME=${1}
     local C_PATH=${PWD##*/}
     if [ "${P_LAB_NAME}" != "${C_PATH}" ]; then
-        # shellcheck disable=SC2164
-        cd "$(find ../ -name "${P_LAB_NAME}.key" -execdir pwd \; -quit)"
+        cd "${P_LAB_NAME}" ;
     fi
 
     do_print_msg "${MSG_START_DEPLOY}" "${P_LAB_NAME}" 0 ; do_print_line
@@ -453,8 +452,7 @@ do_destroy () {
     local P_LAB_NAME=${1}
     local C_PATH=${PWD##*/}
     if [ "${P_LAB_NAME}" != "${C_PATH}" ]; then
-        # shellcheck disable=SC2164
-        cd "$(find ../ -name "${P_LAB_NAME}.key" -execdir pwd \; -quit)"
+        cd "${P_LAB_NAME}" ;
     fi
 
     do_print_msg "${MSG_START_DESTROY}" "${P_LAB_NAME}" 0 ; do_print_line

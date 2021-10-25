@@ -15,8 +15,8 @@
 # limitations under the License.
 
 #
-# @doc: Here we create a namespace used for this lab as an active resource of our workshop cluster.
-#       This resource will be used in the context of the next yaml manifest files of this lab directory.
+# Here we create a namespace used for this lab as an active resource of our workshop cluster.
+# This resource will be used in the context of the next yaml manifest files of this lab directory.
 # --
 apiVersion: v1
 kind: Namespace
