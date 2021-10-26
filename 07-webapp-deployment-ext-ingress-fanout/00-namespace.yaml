@@ -1,5 +1,7 @@
 # Copyright 2021 DoiT International.
 #
+# Based on kubernetes dashboard, Copyright 2017 The Kubernetes Authors.
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -13,26 +15,10 @@
 # limitations under the License.
 
 #
+# Here we create a namespace used for this lab as an active resource of our workshop cluster.
+# This resource will be used in the context of the next yaml manifest files of this lab directory.
 # --
-# @spec: https://kubernetes.io/docs/reference/kubernetes-api/service-resources/service-v1/
-# @info: https://kubernetes.io/docs/concepts/services-networking/service/
-#
 apiVersion: v1
-kind: Service
+kind: Namespace
 metadata:
-  name: static-web-app-service
-  namespace: doit-lab-06
-  labels:
-    k8s-app: static-web-app
-    k8s-scope: gke-ws-doit-lab-06
-spec:
-  type: NodePort
-  selector:
-    k8s-app: static-web-app
-  ports:
-  - protocol: TCP
-    port: 8080
-    targetPort: 80
-    # --
-    # we won't define a nodePort definition here and let k8s define a random one instead.
-    # ** nodePort: 30000
+  name: doit-lab-07
