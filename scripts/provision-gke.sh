@@ -18,13 +18,12 @@
 #
 
 printf "%s\n" "[INIT] workshop cluster" ;
-RANDOM_CLUSTER_KEY=$RANDOM; gcloud container clusters create workshop-${RANDOM_CLUSTER_KEY} \
---machine-type n1-standard-4 \
+UNIQUE_CLUSTER_KEY=$RANDOM; gcloud container clusters create workshop-${UNIQUE_CLUSTER_KEY} \
+--machine-type n2-standard-2 \
 --scopes "https://www.googleapis.com/auth/source.read_write,cloud-platform" \
 --region europe-west1 \
 --node-locations europe-west1-b,europe-west1-c,europe-west1-d \
 --release-channel stable \
---image-type "ubuntu" \
 --disk-type "pd-ssd" \
 --disk-size "60" \
 --num-nodes "1" \
@@ -34,7 +33,7 @@ RANDOM_CLUSTER_KEY=$RANDOM; gcloud container clusters create workshop-${RANDOM_C
 --monitoring=SYSTEM \
 --network "default" \
 --addons HorizontalPodAutoscaling,HttpLoadBalancing,NodeLocalDNS \
---labels k8s-scope=gke-workshop-doit,k8s-cluster=primary,environment=workshop && \
+--labels k8s-scope=gke-workshop-doit,k8s-cluster=primary,k8s-env=workshop && \
 printf "%s\n" "[INIT] test access new cluster using k8s API via kubectl" ; \
 kubectl get all --all-namespaces && kubectl cluster-info && \
-printf "\n%s\n\n" "[INIT] workshop cluster finally initialized -> [workshop-${RANDOM_CLUSTER_KEY}] <-" ;
+printf "\n%s\n\n" "[INIT] workshop cluster finally initialized and available by ID -> [ workshop-${UNIQUE_CLUSTER_KEY} ] <-" ;

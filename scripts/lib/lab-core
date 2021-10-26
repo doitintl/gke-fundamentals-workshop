@@ -465,11 +465,11 @@ do_show_help_for_lab() {
     preflight_logo
 
     printf "This script helps you to start the respective lab in an automated way,\nto identify the status of the cluster and to check the local development\nenvironment for compatibility with the lab. the following commands are\navailable in the current version:\n\n"
-    printf "%b./%blab%b cluster-init\t %binitialize your gke-workshop cluster%b\n" "${MSG_COLOR_DARK}" "${MSG_COLOR_INFO}" "${MSG_COLOR_RESET}" "${MSG_COLOR_DARK}" "${MSG_COLOR_RESET}"
-    printf "%b./%blab%b cluster-destroy\t %bremove your gke-workshop cluster%b\n" "${MSG_COLOR_DARK}" "${MSG_COLOR_INFO}" "${MSG_COLOR_RESET}" "${MSG_COLOR_DARK}" "${MSG_COLOR_RESET}"
-    printf "%b./%blab%b cluster-reset\t %breset cluster environment (re-deploy your workshop cluster)%b\n" "${MSG_COLOR_DARK}" "${MSG_COLOR_INFO}" "${MSG_COLOR_RESET}" "${MSG_COLOR_DARK}" "${MSG_COLOR_RESET}"
-    printf "%b./%blab%b deploy\t\t %bdeploy bcurrent path workload to your gke-cluster%b\n" "${MSG_COLOR_DARK}" "${MSG_COLOR_INFO}" "${MSG_COLOR_RESET}" "${MSG_COLOR_DARK}" "${MSG_COLOR_RESET}"
-    printf "%b./%blab%b destroy\t\t %bremove current path workload from your gke-cluster%b\n" "${MSG_COLOR_DARK}" "${MSG_COLOR_INFO}" "${MSG_COLOR_RESET}" "${MSG_COLOR_DARK}" "${MSG_COLOR_RESET}"
+    printf "%b./%blab.sh%b cluster-init\t %binitialize your gke-workshop cluster%b\n" "${MSG_COLOR_DARK}" "${MSG_COLOR_INFO}" "${MSG_COLOR_RESET}" "${MSG_COLOR_DARK}" "${MSG_COLOR_RESET}"
+    printf "%b./%blab.sh%b cluster-destroy\t %bremove your gke-workshop cluster%b\n" "${MSG_COLOR_DARK}" "${MSG_COLOR_INFO}" "${MSG_COLOR_RESET}" "${MSG_COLOR_DARK}" "${MSG_COLOR_RESET}"
+    printf "%b./%blab.sh%b cluster-reset\t %breset cluster environment (re-deploy your workshop cluster)%b\n" "${MSG_COLOR_DARK}" "${MSG_COLOR_INFO}" "${MSG_COLOR_RESET}" "${MSG_COLOR_DARK}" "${MSG_COLOR_RESET}"
+    printf "%b./%blab.sh%b deploy\t\t %bdeploy bcurrent path workload to your gke-cluster%b\n" "${MSG_COLOR_DARK}" "${MSG_COLOR_INFO}" "${MSG_COLOR_RESET}" "${MSG_COLOR_DARK}" "${MSG_COLOR_RESET}"
+    printf "%b./%blab.sh%b destroy\t\t %bremove current path workload from your gke-cluster%b\n" "${MSG_COLOR_DARK}" "${MSG_COLOR_INFO}" "${MSG_COLOR_RESET}" "${MSG_COLOR_DARK}" "${MSG_COLOR_RESET}"
     printf "\n\n"
     printf "The following additional arguments are usable:\n\n"
     printf "%b--%bno-check%b \t\t %bdisable preflight checks (binary checks, gcloud auth-check ...) for every command%b\n" "${MSG_COLOR_DARK}" "${MSG_COLOR_INFO}" "${MSG_COLOR_RESET}" "${MSG_COLOR_DARK}" "${MSG_COLOR_RESET}"

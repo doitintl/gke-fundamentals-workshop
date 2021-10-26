@@ -8,17 +8,17 @@
     ]
   },
   "metadata": {
-    "name": "workshop-4100",
+    "name": "workshop-13896",
     "agent": "dexter-local-patrick"
   },
   "spec": {
-    "unique-id": "4100",
-    "image-type": "ubuntu",
-    "machine-type": "n1-standard-4",
+    "unique-id": "13896",
+    "image-type": "cos_containerd",
+    "machine-type": "n2-standard-2",
     "nodes-per-region-min": 1,
     "nodes-per-region-max": 1,
     "disk-type": "pd-ssd",
-    "disk-size": "80gb",
+    "disk-size": "60gb",
     "addons": [
       "HorizontalPodAutoscaling",
       "HttpLoadBalancing",
