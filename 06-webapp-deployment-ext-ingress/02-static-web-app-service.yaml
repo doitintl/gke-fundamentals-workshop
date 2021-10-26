@@ -20,7 +20,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: static-web-app-service-v1
+  name: static-web-app-service
   namespace: doit-lab-06
   labels:
     k8s-app: static-web-app

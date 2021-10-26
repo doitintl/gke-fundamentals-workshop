@@ -30,7 +30,7 @@ metadata:
 spec:
   defaultBackend:
     service:
-      name: static-web-app-service-v1
+      name: static-web-app-service
       port:
         number: 8080
 
