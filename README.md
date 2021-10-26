@@ -41,36 +41,38 @@ gcloud init ;
 
 The present gcloud command call initializes the workshop-cluster as regional cluster configuration with one node in each of three availability zones. We use the `ubuntu` k8s node image in these labs to keep the cluster as compatible as possible for further content (e.g. portworx storage provider). 
 
-```bash
-gcloud container clusters create workshop \
---machine-type n1-standard-4 \
---node-locations europe-west1-b,europe-west1-c,europe-west1-d \
---num-nodes "1" \
---release-channel stable \
---region europe-west1 \
---image-type "ubuntu" \
---disk-type "pd-ssd" \
---disk-size "120" \
---network "default" \
---logging=SYSTEM,WORKLOAD \
---monitoring=SYSTEM \
---scopes "https://www.googleapis.com/auth/source.read_write,cloud-platform" \
---addons HorizontalPodAutoscaling,HttpLoadBalancing,NodeLocalDNS \
---labels k8s-scope=kubernetes-workshop-doit,k8s-cluster=primary,environment=workshop && \
-kubectl cluster-info ;
-```
+1. Init k8s cluster with an unique identifier suffix
 
-Now it is time to give the current user complete control over the created cluster using RBAC.
+    ```bash
+    printf "%s\n" "[INIT] workshop cluster" ;
+    UNIQUE_CLUSTER_KEY=$RANDOM; gcloud container clusters create workshop-${UNIQUE_CLUSTER_KEY} \
+    --machine-type n2-standard-2 \
+    --scopes "https://www.googleapis.com/auth/source.read_write,cloud-platform" \
+    --region europe-west1 \
+    --node-locations europe-west1-b,europe-west1-c,europe-west1-d \
+    --release-channel stable \
+    --disk-type "pd-ssd" \
+    --disk-size "60" \
+    --num-nodes "1" \
+    --max-nodes "1" \
+    --min-nodes "1" \
+    --logging=SYSTEM,WORKLOAD \
+    --monitoring=SYSTEM \
+    --network "default" \
+    --addons HorizontalPodAutoscaling,HttpLoadBalancing,NodeLocalDNS \
+    --labels k8s-scope=gke-workshop-doit,k8s-cluster=primary,k8s-env=workshop && \
+    printf "%s\n" "[INIT] test access new cluster using k8s API via kubectl" ; \
+    kubectl get all --all-namespaces && kubectl cluster-info && \
+    printf "\n%s\n\n" "[INIT] workshop cluster finally initialized and available by ID -> [ workshop-${UNIQUE_CLUSTER_KEY} ] <-" ;
+    ```
 
-```bash
-kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value account)
-```
+2. Authenticate your local client (kubectl) against the new cluster
 
-In the last step we authenticate ourselves via the gcloud API to the generated GKE cluster and thus enable e.g. further command calls via `kubectl`.
-
-```bash
-gcloud container clusters get-credentials workshop
-```
+    we already authenticate ourselves via the gcloud API to the generated GKE cluster and thus enable e.g. further command calls via `kubectl`.
+    
+    ```bash
+    gcloud container clusters get-credentials workshop-${UNIQUE_CLUSTER_KEY}
+    ```
 
 ## Links
 - pydevop's [gcloud cheat sheet](https://gist.github.com/pydevops/cffbd3c694d599c6ca18342d3625af97) markdown paper 
