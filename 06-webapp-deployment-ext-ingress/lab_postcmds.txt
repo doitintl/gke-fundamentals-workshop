@@ -19,5 +19,5 @@
 5.1 You can check the benchmark of your web-application using apache-bench command as shown below:
 -> $ ab -n 20 http://<external-ip-of-your-ingress-load-balancer>/
 
-5.1 You can simulate some traffic to your ingress facing loadBalancer by the following ab-command:
+5.2 You can simulate some traffic to your ingress facing loadBalancer by the following ab-command:
 -> $ ab -n 500 -c 25 http://<external-ip-of-your-ingress-load-balancer>/

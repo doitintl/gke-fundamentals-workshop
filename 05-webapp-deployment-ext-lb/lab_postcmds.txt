@@ -1,14 +1,14 @@
 1. You can check the state of Pods at any time with the following kubectl command:
 
--> $ kubectl get pods -n doit-lab-04
+-> $ kubectl get pods -n doit-lab-05
 
 2. You can check your deployment with the following kubectl command:
 
--> $ kubectl get deployments -n doit-lab-04
+-> $ kubectl get deployments -n doit-lab-05
 
 3. You can check the corresponding service endpoint by the following kubectl command:
 
--> $ kubectl get services -n doit-lab-04
+-> $ kubectl get services -n doit-lab-05
 
 4. You can check the status of the auto-provisioned loadBalancer (external-ip) by entering the following command:
 
