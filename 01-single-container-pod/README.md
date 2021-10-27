@@ -98,7 +98,7 @@ Make sure you handled all previous steps of this README! Now, as announced, we p
 
 2. You can also permanently display the current log stream of the pod in question in your terminal using the following command:
   ```bash
-  kubectl get pods -n doit-lab-01
+  kubectl get pods -n doit-lab-01 --watch
   ```
 
 3. You can access this pod from your local environment by kubectl port-forwarding & access this web-app @localhost:8080
