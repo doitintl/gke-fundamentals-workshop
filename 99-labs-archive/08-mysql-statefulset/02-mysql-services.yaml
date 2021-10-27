@@ -1,0 +1,56 @@
+# Copyright 2021 DoiT International.
+#
+# Based on k8s documentation example for "replicated stateful application"
+# @link: https://kubernetes.io/docs/tasks/run-application/run-replicated-stateful-application/
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+#
+# Headless service for stable DNS entries of StatefulSet members.
+# --
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-statefulset-svc
+  namespace: doit-lab-08
+  labels:
+    k8s-app: mysql-statefulset
+    k8s-scope: gke-ws-doit-lab-08
+spec:
+  ports:
+  - name: mysql-3306
+    port: 3306
+  clusterIP: None
+  selector:
+    k8s-app: mysql-statefulset
+
+---
+
+#
+# Client service for connecting to any MySQL instance for reads.
+# For writes, you must instead connect to the primary: mysql-0.mysql.
+# --
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-statefulset-svc-read
+  namespace: doit-lab-08
+  labels:
+    k8s-app: mysql-statefulset
+    k8s-scope: gke-ws-doit-lab-08
+spec:
+  ports:
+  - name: mysql-3306
+    port: 3306
+  selector:
+    k8s-app: mysql-statefulset

@@ -1,0 +1,43 @@
+# Copyright 2021 DoiT International.
+#
+# Based on k8s documentation example for "replicated stateful application"
+# @link: https://kubernetes.io/docs/tasks/run-application/run-replicated-stateful-application/
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+#
+# This ConfigMap provides my.cnf overrides that let you independently control configuration on the primary
+# MySQL server and replicas. In this case, you want the primary server to be able to serve replication logs
+# to replicas, and you want replicas to reject any writes that don't come via replication.
+#
+# There's nothing special about the ConfigMap itself that causes different portions to apply to different Pods.
+# Each Pod decides which portion to look at as it's initializing, based on information provided by the StatefulSet-
+# Controller.
+# --
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-statefulset-configmap
+  namespace: doit-lab-08
+  labels:
+    k8s-app: mysql-statefulset
+    k8s-scope: gke-ws-doit-lab-08
+data:
+  primary.cnf: |
+    # @info: apply this config only on the primary.
+    [mysqld]
+    log-bin
+  replica.cnf: |
+    # @info: apply this config only on replicas.
+    [mysqld]
+    super-read-only
