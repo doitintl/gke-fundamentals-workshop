@@ -12,7 +12,7 @@
 
 4. You can get some more detailed information about your ingress resource by the following kubectl command:
 
--> $ describe ingress static-web-app-ingress -n doit-lab-07
+-> $ kubectl describe ingress static-web-app-ingress -n doit-lab-07
 
 5. As soon as your ingress resource, ingress controller and the corresponding loadBalancer is provisioned (3-4 minutes):
 

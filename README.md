@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![GKE/K8s Version](https://img.shields.io/badge/k8s%20version-1.18.20-blue.svg)](#)
 [![GCloud SDK Version](https://img.shields.io/badge/gcloud%20version-359.0.0-blue.svg)](#)
-[![Build Status](https://img.shields.io/badge/status-unstable-E47911.svg)](#)
+[![Build Status](https://img.shields.io/badge/status-unknown-E47911.svg)](#)
 
 ## Introduction
 
@@ -11,15 +11,16 @@ In this full-day workshop, we will look at some core mechanisms of GKE. We will 
 
 ## Available Labs
 
-| Lab/Folder               | Description                                                                                                                |
-| ------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
-| [lab-01-a](./lab-01-a)   | kubernetes-dashboard frontend web application (Deployment, SA/RBAC, ConfigMap)                                             |
-| [lab-01-b](./lab-01-b)   | ElasticSearch Single-Node (Deployment, InitContainer, PV, PVC)                                                             |
-| [lab-01-c](./lab-01-b)   | nginx config-maps & custom-controller (ConfigMaps, CustomController)                                                       |
-| [lab-02-a](./lab-02-a)   | nginx pod (Pod)                                                                                                            |
-| [lab-02-b](./lab-02-b)   | ElasticSearch StatefulSet (StatefulSet, InitContainer, PV, PVC)                                                            |
-| [lab-02-c](./lab-02-c)   | Kibana Dashboard (Deployment)                                                                                              |
-| [lab-02-d](./lab-02-d)   | job example (Job/JobController)                                                                                            |
+| Lab/Folder | Description |
+| --- | --- |
+| [01-single-container-pod](./01-single-container-pod) | simple single container pod example for a static web application |
+| [02-multiple-container-pod](./02-multiple-container-pod) | advanced multi-container pod example for our web application |
+| [03-webapp-deployment](./03-webapp-deployment) | simple deployment abstraction from lab-01 for a static web application |
+| [04-webapp-deployment-ext-np](./04-webapp-deployment-ext-np) | simple nodePort service exposing example for this application |
+| [05-webapp-deployment-ext-lb](./05-webapp-deployment-ext-lb) | simple loadBalancer service exposing example using the same backend-app |
+| [06-webapp-deployment-ext-ingress](./06-webapp-deployment-ext-ingress) | simple ingress example using gce-based ingress controller |
+| [07-webapp-deployment-ext-ingress-fanout](./07-webapp-deployment-ext-ingress-fanout) | advanced ingress fan-out example for multiple app-versions |
+| [08-webapp-k8s-dashboard-deployment](./08-webapp-k8s-dashboard-deployment) | advanced deployment example using secrets, configmaps and RBAC |
 
 ## Core Requirements
 
@@ -34,6 +35,7 @@ The preparation of the GKE cluster is one of the first steps of our workshop and
 
 ## GCloud SDK Preparation
 ```bash
+gcloud components update ;
 gcloud init ;
 ```
 
@@ -41,7 +43,7 @@ gcloud init ;
 
 The present gcloud command call initializes the workshop-cluster as regional cluster configuration with one node in each of three availability zones. We use the `ubuntu` k8s node image in these labs to keep the cluster as compatible as possible for further content (e.g. portworx storage provider). 
 
-1. Init k8s cluster with an unique identifier suffix
+- Init k8s cluster with an unique identifier suffix
 
     ```bash
     printf "%s\n" "[INIT] workshop cluster" ;
@@ -64,14 +66,6 @@ The present gcloud command call initializes the workshop-cluster as regional clu
     printf "%s\n" "[INIT] test access new cluster using k8s API via kubectl" ; \
     kubectl get all --all-namespaces && kubectl cluster-info && \
     printf "\n%s\n\n" "[INIT] workshop cluster finally initialized and available by ID -> [ workshop-${UNIQUE_CLUSTER_KEY} ] <-" ;
-    ```
-
-2. Authenticate your local client (kubectl) against the new cluster
-
-    we already authenticate ourselves via the gcloud API to the generated GKE cluster and thus enable e.g. further command calls via `kubectl`.
-    
-    ```bash
-    gcloud container clusters get-credentials workshop-${UNIQUE_CLUSTER_KEY}
     ```
 
 ## Links
