@@ -3,7 +3,6 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![GKE/K8s Version](https://img.shields.io/badge/k8s%20version-1.18.20-blue.svg)](#)
 [![GCloud SDK Version](https://img.shields.io/badge/gcloud%20version-359.0.0-blue.svg)](#)
-[![Build Status](https://img.shields.io/badge/status-unknown-E47911.svg)](#)
 
 ## Introduction
 
@@ -24,7 +23,7 @@ In this full-day workshop, we will look at some core mechanisms of GKE. We will 
 
 ## Core Requirements
 
-For the use of the local development environment for all GKE/K8s relevant CLI/API calls a certain tool set is required and Linux or MacOS as operating system is recommended. If it is not possible to install our stack due to limitations in terms of feasibility/availability in the preparation, you can alternatively use the browser-internal cloud shell of your GCP console.
+For the use of the local development environment for all GKE/K8s relevant CLI/API calls a certain tool set is required and Linux or macOS as operating system is recommended. If it is not possible to install our stack due to limitations in terms of feasibility/availability in the preparation, you can alternatively use the browser-internal cloud shell of your GCP console.
 
 - `gcloud sdk` [installation](https://cloud.google.com/sdk/docs/install) tutorial
 - `kubectl` [installation](https://kubernetes.io/docs/tasks/tools/) tutorial
@@ -39,11 +38,18 @@ gcloud components update ;
 gcloud init ;
 ```
 
+## Optional Terminal Preparation
+```bash
+alias k='kubectl'
+```
+
 ## Workshop Cluster Provisioning
 
-The present gcloud command call initializes the workshop-cluster as regional cluster configuration with one node in each of three availability zones. We use the `ubuntu` k8s node image in these labs to keep the cluster as compatible as possible for further content (e.g. portworx storage provider). 
+The present gcloud command call initializes the workshop-cluster as regional cluster configuration with one node in each of three availability zones. 
+ 
+- Please make sure that you are also in the project prepared for this workshop or that your used dev/sandbox project has also been selected via `cloud init`!
 
-- Init k8s cluster with an unique identifier suffix
+- Init your GKE-Cluster with a unique identifier suffix (_and remind your cluster-id_)
 
     ```bash
     printf "%s\n" "[INIT] workshop cluster" ;
@@ -70,7 +76,6 @@ The present gcloud command call initializes the workshop-cluster as regional clu
 
 ## Links
 - pydevop's [gcloud cheat sheet](https://gist.github.com/pydevops/cffbd3c694d599c6ca18342d3625af97) markdown paper 
-
 
 ## License
 

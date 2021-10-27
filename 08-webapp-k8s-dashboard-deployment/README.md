@@ -9,7 +9,7 @@
 
 ## Introduction
 
-In the following lab we will set up our local development environment, provision the workshop cluster and roll out our first application, the Kubernetes-dashboard ([source](https://github.com/kubernetes/dashboard/blob/master/docs/user/installation.md)). This lab will give us a basic insight into the standard Kubernetes resources, clarify an important approach regarding the ServiceAccounts and RBAC to use, and provide a control base for our other labs.
+In the following lab we will set up our local development environment, provision the workshop cluster and roll out the Kubernetes-dashboard application stack ([source](https://github.com/kubernetes/dashboard/blob/master/docs/user/installation.md)). This lab will give us a basic insight into the standard Kubernetes resources, clarify an important approach regarding the ServiceAccounts and RBAC to use, and provide a control base for our other labs.
 
 ![application screenshot](../.github/media/lab-08-screenshot-small.png)
 
@@ -22,12 +22,17 @@ For the use of the local development environment for all GKE/K8s relevant CLI/AP
 
 ## Cluster Preparation
 
-The preparation of the GKE cluster is one of the first steps of our workshop and is the basis for all our further activity using the local development environment of all participants. We will pave the way to our first K8s application deployment step by step in the following section, learning some of the basics of using the gcloud SDK CLI and kubectl.
+The preparation of the GKE cluster is one of the first steps of our workshop and is the basis for all our further activity using the local development environment of all participants. We will pave the way to our first K8s application deployment step by step in the following section, learning some basics of using the gcloud SDK CLI and kubectl.
 
 ## GCloud SDK Preparation
 ```bash
 gcloud components update ;
 gcloud init ;
+```
+
+## Optional Terminal Preparation
+```bash
+alias k='kubectl'
 ```
 
 ## Cluster Provisioning
@@ -36,7 +41,9 @@ The present gcloud command call initializes the workshop-cluster as regional clu
 
 _If you have already initialized the cluster, you can skip this step now!_
 
-- Init k8s cluster with an unique identifier suffix
+- Please make sure that you are also in the project prepared for this workshop or that your used dev/sandbox project has also been selected via `cloud init`!
+
+- Init your GKE-Cluster with a unique identifier suffix
 
     ```bash
     printf "%s\n" "[INIT] workshop cluster" ;
@@ -64,29 +71,35 @@ _If you have already initialized the cluster, you can skip this step now!_
 - (optional) If it is necessary to re-authenticate to the created GKE cluster (e.g. to run kubectl commands) the following command may help:
 
     ```bash
-    gcloud container clusters get-credentials workshop
+    gcloud container clusters get-credentials workshop-${UNIQUE_CLUSTER_KEY}
+    ```
+
+- (optional) If there are unexpected allocation problems with cluster resources, the current user can also take over the cluster-wide-administration of his created cluster with the following command:
+
+    ```bash
+    kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value account)
     ```
 
 ## Cluster Application Deployment
 
 Make sure you handled all previous steps of this README! Now, as announced, we perform the actual deployment of the kubernetes-dashboard and provision an access-authorized user for token-based authentication at the frontend of the application.
 
-### Run Deployment and fetch Admin-User Access-Token
-```bash
-kubectl apply -f . && \
-kubectl -n doit-lab-08 get secret $(kubectl -n doit-lab-08 get sa/admin-user -o jsonpath="{.secrets[0].name}") -o go-template="{{.data.token | base64decode}}" ;
-```
+1. Run deployment and fetch admin-user's access-token
+  ```bash
+  kubectl apply -f . && \
+  kubectl -n doit-lab-08 get secret $(kubectl -n doit-lab-08 get sa/admin-user -o jsonpath="{.secrets[0].name}") -o go-template="{{.data.token | base64decode}}" ;
+  ```
 
-### Start Local Proxy Access to ClusterIP based Service Endpoint
+2. Start local proxy-access to gke-clusterIP based service-endpoint
 
-To gain appropriate access to the web front-end of the application, we need a tunneled proxy endpoint from the local machine into the GKE cluster. The following command establishes the proxy endpoint and allows us to access by [this URL](http://localhost:8001/api/v1/namespaces/doit-lab-08/services/https:kubernetes-dashboard:/proxy/#/login). Attention! The following command starts a process which can only be interrupted by IPC (CTRL+c), further shell commands are no longer possible in this terminal until you break the call by pressing CTRL+c.
+  _To gain appropriate access to the web front-end of the application, we need a tunneled proxy endpoint from the local machine into the GKE cluster. The following command establishes the proxy endpoint and allows us to access by [this URL](http://localhost:8001/api/v1/namespaces/doit-lab-08/services/https:kubernetes-dashboard:/proxy/#/login). Attention! The following command starts a process which can only be interrupted by IPC (CTRL+c), further shell commands are no longer possible in this terminal until you break the call by pressing CTRL+c._
+  
+  ```bash
+  kubectl port-forward service/static-web-app-service 443:8443 -n doit-lab-08
+  # You can access your deployed kubernetes-dashboard via `https://localhost:8443/` now.
+  ```
 
-```bash
-kubectl port-forward service/static-web-app-service 443:8443 -n doit-lab-08
-# You can access your deployed kubernetes-dashboard via `https://localhost:8443/` now.
-```
-
-## Additional (optional) Steps
+## Optional Steps
 
 Now we can set the current k8s context to our lab exercise namespace `doit-lab-08` to make sure that every command set is run against this lab resources.
 
