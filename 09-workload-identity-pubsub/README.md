@@ -148,7 +148,7 @@ kubectl config set-context --current --namespace=doit-lab-09
 
 ```bash
 # delete k8s namespace and resources in it
-kubectl delete ns pubsub-sa
+kubectl delete ns doit-lab-09
 
 # delete IAM Service Account
 gcloud iam serviceaccount delete gke-pubsub@<PROJECT_ID>.iam.gserviceaccount.com
@@ -156,9 +156,6 @@ gcloud iam serviceaccount delete gke-pubsub@<PROJECT_ID>.iam.gserviceaccount.com
 # delete Pub/Sub subscription and topic
 gcloud pubsub subscriptions delete echo-read
 gcloud pubsub topics delete echo
-
-# delete Kubernetes namespace
-kubectl delete namespace doit-lab-09
 
 # optional: delete GKE cluster
 gcloud container clusters delete workshop
