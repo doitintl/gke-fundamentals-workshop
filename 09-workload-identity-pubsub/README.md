@@ -157,7 +157,11 @@ gcloud iam serviceaccount delete gke-pubsub@<PROJECT_ID>.iam.gserviceaccount.com
 gcloud pubsub subscriptions delete echo-read
 gcloud pubsub topics delete echo
 
-# delete GKE cluster?
+# delete Kubernetes namespace
+kubectl delete namespace doit-lab-09
+
+# optional: delete GKE cluster
+gcloud container clusters delete workshop
 ```
 
 ## Links
