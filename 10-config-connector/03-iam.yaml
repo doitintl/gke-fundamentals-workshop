@@ -1,0 +1,35 @@
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMServiceAccount
+metadata:
+  name: pubsub-sa
+  namespace: doit-lab-10
+spec:
+  displayName: Service Account used subscribing to Pub/Sub from within GKE
+---
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPolicyMember
+metadata:
+  name: pubsub-sa-subscriber
+  namespace: doit-lab-10
+spec:
+  memberFrom:
+    serviceAccountRef:
+      name: pubsub-sa
+  role: roles/pubsub.subscriber
+  resourceRef:
+    apiVersion: resourcemanager.cnrm.cloud.google.com/v1beta1
+    kind: Project
+    external: projects/<PROJECT_ID>
+---
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPolicyMember
+metadata:
+  name: pubsub-sa-workloadidentity
+  namespace: doit-lab-10
+spec:
+  member: serviceAccount:<PROJECT_ID>.svc.id.goog[doit-lab-10/pubsub-sa]
+  role: roles/iam.workloadIdentityUser
+  resourceRef:
+    apiVersion: iam.cnrm.cloud.google.com/v1beta1
+    kind: IAMServiceAccount
+    name: pubsub-sa
