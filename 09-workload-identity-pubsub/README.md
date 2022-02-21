@@ -114,7 +114,7 @@ Make sure you handled all previous steps of this README! Now we'll create a samp
 
 ### Run Deployment
 ```bash
-kubectl apply -f pubsub-deployment.yaml
+kubectl apply -f 00-pubsub-deployment.yaml
 
 # wait for pod to be ready, break this command once ready
 kubectl get pod --watch --selector app=pubsub
