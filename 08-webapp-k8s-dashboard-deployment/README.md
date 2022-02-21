@@ -92,10 +92,10 @@ Make sure you handled all previous steps of this README! Now, as announced, we p
 
 2. Start local proxy-access to gke-clusterIP based service-endpoint
 
-  _To gain appropriate access to the web front-end of the application, we need a tunneled proxy endpoint from the local machine into the GKE cluster. The following command establishes the proxy endpoint and allows us to access by [this URL](http://localhost:8001/api/v1/namespaces/doit-lab-08/services/https:kubernetes-dashboard:/proxy/#/login). Attention! The following command starts a process which can only be interrupted by IPC (CTRL+c), further shell commands are no longer possible in this terminal until you break the call by pressing CTRL+c._
+  _To gain appropriate access to the web front-end of the application, we need a tunneled proxy endpoint from the local machine into the GKE cluster. The following command establishes the proxy endpoint and allows us to access under [this URL](https://localhost:8443/api/v1/namespaces/doit-lab-08/services/https:kubernetes-dashboard:/proxy/#/login). Attention! The following command starts a process which can only be interrupted by IPC (CTRL+c), further shell commands are no longer possible in this terminal until you break the call by pressing CTRL+c._
   
   ```bash
-  kubectl port-forward service/kubernetes-dashboard 443:8443 -n doit-lab-08
+  kubectl port-forward service/kubernetes-dashboard 8443:443 -n doit-lab-08
   # You can access your deployed kubernetes-dashboard via `https://localhost:8443/` now.
   ```
 
