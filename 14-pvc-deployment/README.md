@@ -1,16 +1,15 @@
-# GKE Workshop LAB-02 (C)
+# GKE Workshop LAB-01 (B)
 
 [![Context](https://img.shields.io/badge/GKE%20Fundamentals-1-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![GKE/K8s Version](https://img.shields.io/badge/k8s%20version-1.18.20-blue.svg)](#)
 [![GCloud SDK Version](https://img.shields.io/badge/gcloud%20version-359.0.0-blue.svg)](#)
 [![elasticSearch Version](https://img.shields.io/badge/elasticsearch%20version-6.2.4-green.svg)](#)
-[![Kibana Version](https://img.shields.io/badge/kibana%20version-6.2.4-green.svg)](#)
 [![Build Status](https://img.shields.io/badge/status-unstable-E47911.svg)](#)
 
 ## Introduction
 
-In the following lab we will set up our local development environment, provision the workshop cluster and roll out our next application, kibana for elasticsearch ([source](https://www.elastic.co/guide/en/cloud-on-k8s/current/k8s-quickstart.html)). This lab will give us an additional insight into combining Kubernetes resource.
+In the following lab we will set up our local development environment, provision the workshop cluster and roll out our next application, elasticsearch ([source](https://www.elastic.co/guide/en/cloud-on-k8s/current/k8s-quickstart.html)) single-node stack. This lab will give us an additional insight into the standard Kubernetes resources, clarify an important approach regarding the PV/PVCs and provide a control base for our next-step labs.
 
 ## Core Requirements
 
@@ -68,29 +67,21 @@ gcloud container clusters get-credentials workshop
 
 Make sure you handled all previous steps of this README! Now, as announced, we perform the actual deployment of the kubernetes-dashboard and provision an access-authorized user for token-based authentication at the frontend of the application.
 
-_It's important, that our elasticsearch statefulSet workloads are still running (`lab-02-b/elasticsearch-statefulset.yaml`)!_
-
 ### Run Deployment
 ```bash
-kubectl apply -f kibana-deployment.yaml
-```
-
-## Additional Steps
-
-Now we can set the current k8s context to our lab exercise namespace `doit-lab-02-c` to make sure that every command set is run against this lab resources.
-
-```bash
-kubectl config set-context --current --namespace=doit-lab-02-c
+kubectl apply -f 00-namespace.yaml
+kubectl apply -f 01-elasticsearch-simple.yaml
 ```
 
 ## Application Clean-Up
 
 ```bash
-kubectl delete -f kibana-deployment.yaml
+kubectl delete -f 00-namespace.yaml
 ```
 
 ## Links
 
+- https://gist.github.com/pyk/3fc87db27eed864e354974bc25aabf88
 - https://kubernetes.io/docs/reference/kubectl/cheatsheet/
 - https://phoenixnap.com/kb/kubectl-commands-cheat-sheet
 

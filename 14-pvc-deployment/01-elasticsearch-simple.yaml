@@ -1,35 +1,12 @@
-# Copyright 2021 DoiT International
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-# GIST-Inspired by https://pyk.github.io (https://gist.github.com/pyk/3fc87db27eed864e354974bc25aabf88)
-#
-
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: doit-lab-01-b
-
----
 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: elasticsearch
-  namespace: doit-lab-01-b
+  namespace: doit-lab-14
   labels:
     k8s-app: elasticsearch
-    k8s-scope: gke-ws-doit-lab-01-b
+    k8s-scope: gke-ws-doit-lab-14
 spec:
   replicas: 1
   selector:
@@ -39,7 +16,7 @@ spec:
     metadata:
       labels:
         k8s-app: elasticsearch
-        k8s-scope: gke-ws-doit-lab-01-b
+        k8s-scope: gke-ws-doit-lab-14
     spec:
       volumes:
         - name: data
@@ -110,10 +87,10 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: elasticsearch-data
-  namespace: doit-lab-01-b
+  namespace: doit-lab-14
   labels:
     k8s-app: elasticsearch
-    k8s-scope: gke-ws-doit-lab-01-b
+    k8s-scope: gke-ws-doit-lab-14
 spec:
   storageClassName: premium-rwo
   accessModes:

@@ -26,8 +26,8 @@ The preparation of the GKE cluster is one of the first steps of our workshop and
 
 ## GCloud SDK Preparation
 ```bash
-gcloud components update ;
-gcloud init ;
+gcloud components update
+gcloud init
 ```
 
 ## Optional Terminal Preparation
@@ -46,7 +46,7 @@ _If you have already initialized the cluster, you can skip this step now!_
 - Init your GKE-Cluster with a unique identifier suffix
 
     ```bash
-    printf "%s\n" "[INIT] workshop cluster" ;
+    printf "%s\n" "[INIT] workshop cluster"
     UNIQUE_CLUSTER_KEY=$RANDOM; gcloud container clusters create workshop-${UNIQUE_CLUSTER_KEY} \
     --machine-type n2-standard-2 \
     --scopes "https://www.googleapis.com/auth/source.read_write,cloud-platform" \
@@ -63,9 +63,9 @@ _If you have already initialized the cluster, you can skip this step now!_
     --network "default" \
     --addons HorizontalPodAutoscaling,HttpLoadBalancing,NodeLocalDNS \
     --labels k8s-scope=gke-workshop-doit,k8s-cluster=primary,k8s-env=workshop && \
-    printf "%s\n" "[INIT] test access new cluster using k8s API via kubectl" ; \
+    printf "%s\n" "[INIT] test access new cluster using k8s API via kubectl" \
     kubectl get all --all-namespaces && kubectl cluster-info && \
-    printf "\n%s\n\n" "[INIT] workshop cluster finally initialized and available by ID -> [ workshop-${UNIQUE_CLUSTER_KEY} ] <-" ;
+    printf "\n%s\n\n" "[INIT] workshop cluster finally initialized and available by ID -> [ workshop-${UNIQUE_CLUSTER_KEY} ] <-"
     ```
 
 - (optional) If it is necessary to re-authenticate to the created GKE cluster (e.g. to run kubectl commands) the following command may help:
@@ -74,11 +74,7 @@ _If you have already initialized the cluster, you can skip this step now!_
     gcloud container clusters get-credentials workshop-${UNIQUE_CLUSTER_KEY}
     ```
 
-- (optional) If there are unexpected allocation problems with cluster resources, the current user can also take over the cluster-wide-administration of his created cluster with the following command:
 
-    ```bash
-    kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value account)
-    ```
 
 ## Cluster Application Deployment
 
@@ -87,15 +83,15 @@ Make sure you handled all previous steps of this README! Now, as announced, we p
 1. Run deployment and fetch admin-user's access-token
   ```bash
   kubectl apply -f . && \
-  kubectl -n doit-lab-08 get secret $(kubectl -n doit-lab-08 get sa/admin-user -o jsonpath="{.secrets[0].name}") -o go-template="{{.data.token | base64decode}}" ;
+  kubectl -n doit-lab-08 get secret $(kubectl -n doit-lab-08 get sa/admin-user -o jsonpath="{.secrets[0].name}") -o go-template="{{.data.token | base64decode}}"
   ```
 
 2. Start local proxy-access to gke-clusterIP based service-endpoint
 
-  _To gain appropriate access to the web front-end of the application, we need a tunneled proxy endpoint from the local machine into the GKE cluster. The following command establishes the proxy endpoint and allows us to access by [this URL](http://localhost:8001/api/v1/namespaces/doit-lab-08/services/https:kubernetes-dashboard:/proxy/#/login). Attention! The following command starts a process which can only be interrupted by IPC (CTRL+c), further shell commands are no longer possible in this terminal until you break the call by pressing CTRL+c._
+  _To gain appropriate access to the web front-end of the application, we need a tunneled proxy endpoint from the local machine into the GKE cluster. The following command establishes the proxy endpoint and allows us to access under [this URL](https://localhost:8443/api/v1/namespaces/doit-lab-08/services/https:kubernetes-dashboard:/proxy/#/login). Attention! The following command starts a process which can only be interrupted by IPC (CTRL+c), further shell commands are no longer possible in this terminal until you break the call by pressing CTRL+c._
   
   ```bash
-  kubectl port-forward service/static-web-app-service 443:8443 -n doit-lab-08
+  kubectl port-forward service/kubernetes-dashboard 8443:443 -n doit-lab-08
   # You can access your deployed kubernetes-dashboard via `https://localhost:8443/` now.
   ```
 
@@ -116,7 +112,7 @@ kubectl get secret $(kubectl get sa/admin-user -o jsonpath="{.secrets[0].name}")
 ## Application Clean-Up
 
 ```bash
-kubectl delete -f . ;
+kubectl delete -f .
 ```
 
 ## Links

@@ -28,8 +28,8 @@ The preparation of the GKE cluster is one of the first steps of our workshop and
 
 ## GCloud SDK Preparation
 ```bash
-gcloud init ;
-gcloud config set compute/zone europe-west1-b ;
+gcloud init
+gcloud config set compute/zone europe-west1-b
 ```
 
 ## Cluster Provisioning
@@ -41,7 +41,7 @@ Update `<PROJECT_ID>` with the correct project name throughout the tutorial.
 ```bash
 gcloud container clusters create workshop \
 --machine-type n1-standard-4 \
---node-locations europe-west1-b,europe-west1-c,europe-west1-d \
+--node-locations europe-west1-b \
 --num-nodes "1" \
 --release-channel stable \
 --region europe-west1 \
@@ -54,7 +54,7 @@ gcloud container clusters create workshop \
 --labels k8s-scope=kubernetes-workshop-doit,k8s-cluster=primary,environment=workshop \
 --addons HorizontalPodAutoscaling,HttpLoadBalancing,ConfigConnector \
 --workload-pool=<PROJECT_ID>.svc.id.goog && \
-kubectl cluster-info ;
+kubectl cluster-info
 ```
 
 Now it is time to give the current user complete control over the created cluster using RBAC.

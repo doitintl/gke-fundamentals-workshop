@@ -26,8 +26,8 @@ The preparation of the GKE cluster is one of the first steps of our workshop and
 
 ## GCloud SDK Preparation
 ```bash
-gcloud init ;
-gcloud config set compute/zone europe-west1-b ;
+gcloud init
+gcloud config set compute/zone europe-west1-b
 ```
 
 ## Cluster Provisioning
@@ -51,7 +51,7 @@ gcloud container clusters create workshop \
 --scopes "https://www.googleapis.com/auth/source.read_write,cloud-platform" \
 --labels k8s-scope=kubernetes-workshop-doit,k8s-cluster=primary,environment=workshop \
 --workload-pool=<PROJECT_ID>.svc.id.goog && \
-kubectl cluster-info ;
+kubectl cluster-info
 ```
 
 Now it is time to give the current user complete control over the created cluster using RBAC.
@@ -114,7 +114,7 @@ Make sure you handled all previous steps of this README! Now we'll create a samp
 
 ### Run Deployment
 ```bash
-kubectl apply -f pubsub-deployment.yaml
+kubectl apply -f 00-pubsub-deployment.yaml
 
 # wait for pod to be ready, break this command once ready
 kubectl get pod --watch --selector app=pubsub
