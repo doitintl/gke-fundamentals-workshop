@@ -26,8 +26,8 @@ The preparation of the GKE cluster is one of the first steps of our workshop and
 
 ## GCloud SDK Preparation
 ```bash
-gcloud components update ;
-gcloud init ;
+gcloud components update
+gcloud init
 ```
 
 ## Optional Terminal Preparation
@@ -46,7 +46,7 @@ _If you have already initialized the cluster, you can skip this step now!_
 - Init your GKE-Cluster with a unique identifier suffix
 
     ```bash
-    printf "%s\n" "[INIT] workshop cluster" ;
+    printf "%s\n" "[INIT] workshop cluster"
     UNIQUE_CLUSTER_KEY=$RANDOM; gcloud container clusters create workshop-${UNIQUE_CLUSTER_KEY} \
     --machine-type n2-standard-2 \
     --scopes "https://www.googleapis.com/auth/source.read_write,cloud-platform" \
@@ -63,9 +63,9 @@ _If you have already initialized the cluster, you can skip this step now!_
     --network "default" \
     --addons HorizontalPodAutoscaling,HttpLoadBalancing,NodeLocalDNS \
     --labels k8s-scope=gke-workshop-doit,k8s-cluster=primary,k8s-env=workshop && \
-    printf "%s\n" "[INIT] test access new cluster using k8s API via kubectl" ; \
+    printf "%s\n" "[INIT] test access new cluster using k8s API via kubectl" \
     kubectl get all --all-namespaces && kubectl cluster-info && \
-    printf "\n%s\n\n" "[INIT] workshop cluster finally initialized and available by ID -> [ workshop-${UNIQUE_CLUSTER_KEY} ] <-" ;
+    printf "\n%s\n\n" "[INIT] workshop cluster finally initialized and available by ID -> [ workshop-${UNIQUE_CLUSTER_KEY} ] <-"
     ```
 
 - (optional) If it is necessary to re-authenticate to the created GKE cluster (e.g. to run kubectl commands) the following command may help:
@@ -130,7 +130,7 @@ kubectl config set-context --current --namespace=doit-lab-05
 ## Application Clean-Up
 
 ```bash
-kubectl delete -f . ;
+kubectl delete -f .
 ```
 
 ## Links

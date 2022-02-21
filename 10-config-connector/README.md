@@ -54,7 +54,7 @@ gcloud container clusters create workshop \
 --labels k8s-scope=kubernetes-workshop-doit,k8s-cluster=primary,environment=workshop \
 --addons HorizontalPodAutoscaling,HttpLoadBalancing,ConfigConnector \
 --workload-pool=<PROJECT_ID>.svc.id.goog && \
-kubectl cluster-info ;
+kubectl cluster-info
 ```
 
 Now it is time to give the current user complete control over the created cluster using RBAC.

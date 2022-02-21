@@ -25,8 +25,8 @@ The preparation of the GKE cluster is one of the first steps of our workshop and
 
 ## GCloud SDK Preparation
 ```bash
-gcloud init ;
-gcloud config set compute/zone europe-west1-b ;
+gcloud init
+gcloud config set compute/zone europe-west1-b
 ```
 
 ## Cluster Provisioning
@@ -53,7 +53,7 @@ gcloud container clusters create workshop \
 --labels k8s-scope=kubernetes-workshop-doit,k8s-cluster=primary,environment=workshop && \
 kubectl cluster-info && \
 kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value account) && \
-gcloud container clusters get-credentials workshop ;
+gcloud container clusters get-credentials workshop
 ```
 
 ## Workload Description
@@ -78,12 +78,12 @@ Make sure you handled all previous steps of this README before starting this sec
 
 2. In another terminal window, run:
     ```bash
-    kubectl apply -f nginx-config-map.yaml ;
+    kubectl apply -f nginx-config-map.yaml
     ```
 
 3. To remove resources completely, run:
    ```bash
-    kubectl delete -f nginx-config-map.yaml ;
+    kubectl delete -f nginx-config-map.yaml
    ```
 
 you can always make changes to the nginx delivery content by adjusting the key 'index.html: your-string-here' and confirming the change to the `nginx-config-map.yaml` file accordingly with `kubectl apply`.
@@ -98,7 +98,7 @@ kubectl config set-context --current --namespace=doit-lab-01-c
 
 ## Application Clean-Up
 
-- run `kubectl delete -f nginx-config-map.yaml ;`
+- run `kubectl delete -f nginx-config-map.yaml`
 - after that perform a IPC termination of nginx-controller.sh process (CTRL+c)
 
 ## License

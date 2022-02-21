@@ -23,8 +23,8 @@ The preparation of the GKE cluster is one of the first steps of our workshop and
 
 ## GCloud SDK Preparation
 ```bash
-gcloud init ;
-gcloud config set compute/zone europe-west1-b ;
+gcloud init
+gcloud config set compute/zone europe-west1-b
 ```
 
 ## Cluster Provisioning
@@ -47,7 +47,7 @@ gcloud container clusters create workshop \
 --scopes "https://www.googleapis.com/auth/source.read_write,cloud-platform" \
 --addons HorizontalPodAutoscaling,HttpLoadBalancing,NodeLocalDNS \
 --labels k8s-scope=kubernetes-workshop-doit,k8s-cluster=primary,environment=workshop && \
-kubectl cluster-info ;
+kubectl cluster-info
 ```
 
 Now it is time to give the current user complete control over the created cluster using RBAC.
@@ -97,7 +97,7 @@ kubectl port-forward nginx 8080:80
 ## Application Clean-Up
 
 ```bash
-kubectl delete -f nginx-pod.yaml ;
+kubectl delete -f nginx-pod.yaml
 ```
 
 ## Links
