@@ -1,0 +1,39 @@
+# Copyright 2021 DoiT International
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: job-04-exec-limit
+  namespace: doit-lab-12
+  labels:
+    k8s-app: job-03-exec-limit
+    k8s-scope: gke-ws-doit-lab-12
+spec:
+  # try to run 5 times before considering a Job as failed
+  backoffLimit: 5
+  # once a Job reaches activeDeadlineSeconds, all of its running Pods
+  # are terminated and the Job status will become type: Failed with
+  # reason: DeadlineExceeded.
+  activeDeadlineSeconds: 20
+  template:
+    metadata:
+      name: job-04-exec-limit-tpl
+    spec:
+      containers:
+        - name: job-04-exec-limit-c
+          image: busybox
+          command: ["/bin/sh", "-c"]
+          args: ["echo 'just running a (always failing) parallel-consumer job'; sleep 1; exit 1;"]
+      restartPolicy: OnFailure
