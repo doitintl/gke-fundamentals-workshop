@@ -74,12 +74,6 @@ _If you have already initialized the cluster, you can skip this step now!_
     gcloud container clusters get-credentials workshop-${UNIQUE_CLUSTER_KEY}
     ```
 
-- (optional) If there are unexpected allocation problems with cluster resources, the current user can also take over the cluster-wide-administration of his created cluster with the following command:
-
-    ```bash
-    kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value account)
-    ```
-
 ## Cluster Application Deployment
 
 Make sure you handled all previous steps of this README! Now, as announced, we perform the actual deployment of the kubernetes-dashboard and provision an access-authorized user for token-based authentication at the frontend of the application.
