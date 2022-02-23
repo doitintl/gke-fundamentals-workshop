@@ -123,7 +123,7 @@ kubectl apply -f affinity-tolerations/03-static-web-app-affinity-deployment.yaml
 
 Taint your nodes with the `NoSchedule` taint and recreate the deployment:
 ```
-kuebctl get nodes
+kubectl get nodes
 kubectl taint nodes node1 node2 node3 blocked:NoSchedule
 kubectl delete -f 02-static-web-app-deployment.yaml
 kubectl apply -f 02-static-web-app-deployment.yaml
