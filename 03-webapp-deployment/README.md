@@ -115,10 +115,30 @@ Now we can set the current k8s context to our lab exercise namespace `doit-lab-0
 kubectl config set-context --current --namespace=doit-lab-03
 ```
 
+Replace `02-static-web-app-deployment.yaml` with  `affinity-tolerations/03-static-web-app-affinity-deployment.yaml` to see how the Kubernetes scheduler decides on the pod placement now:
+```bash
+kubectl delete -f 02-static-web-app-deployment.yaml
+kubectl apply -f affinity-tolerations/03-static-web-app-affinity-deployment.yaml
+```
+
+Taint your nodes with the `NoSchedule` taint and recreate the deployment:
+```
+kuebctl get nodes
+kubectl taint nodes node1 node2 node3 blocked:NoSchedule
+kubectl delete -f 02-static-web-app-deployment.yaml
+kubectl apply -f 02-static-web-app-deployment.yaml
+```
+
+Replace the (unscheduleable, due to taints) deployment with `affinity-tolerations/04-static-web-app-tolerations-deployment.yaml`:
+```bash
+kubectl delete -f 02-static-web-app-deployment.yaml
+kubectl apply -f affinity-tolerations/04-static-web-app-tolerations-deployment.yaml
+```
 ## Application Clean-Up
 
 ```bash
 kubectl delete -f .
+kubectl taint nodes node1 node2 node3 blocked:NoSchedule-
 ```
 
 ## Links
