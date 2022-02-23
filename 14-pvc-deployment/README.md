@@ -1,4 +1,4 @@
-# GKE Workshop LAB-01 (B)
+# GKE Workshop LAB-14 (B)
 
 [![Context](https://img.shields.io/badge/GKE%20Fundamentals-1-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)

@@ -1,4 +1,4 @@
-# GKE Workshop LAB-07
+# GKE Workshop LAB-10
 
 ## Config Connector example
 
