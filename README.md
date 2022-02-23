@@ -58,7 +58,7 @@ The present gcloud command call initializes the workshop-cluster as regional clu
     --scopes "https://www.googleapis.com/auth/source.read_write,cloud-platform" \
     --region europe-west1 \
     --node-locations europe-west1-b,europe-west1-c,europe-west1-d \
-    --release-channel stable \
+    --release-channel regular \
     --disk-type "pd-ssd" \
     --disk-size "60" \
     --num-nodes "1" \
