@@ -1,0 +1,92 @@
+# Copyright 2021 DoiT International.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+#
+# --
+# @spec: https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/deployment-v1/
+#
+# @info: Here we create a simple deployment that describes a nginx-based static web application
+#        and provisions it within the cluster. You can access this app from your local environment
+#        by kubectl's port-forwarding command and access the web-application on localhost:8080 ...
+#
+#        $ kubectl port-forward service/static-web-app-service 8080:8080 -n doit-lab-03
+# --
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: static-web-app-deployment-affinity
+  namespace: doit-lab-03
+  labels:
+    k8s-app: static-web-app
+    k8s-scope: gke-ws-doit-lab-03
+spec:
+  #
+  # The specs for a deployment here consist of the three most important key sections: replicas, selector and template;
+  # In 'template' we find another spec section that describes the actual web application (similar to our pod example);
+  # We will also indirectly address the ReplicaSet as a resource in k8s in this example by setting the replicas to n>1.
+  # --
+  replicas: 2
+  selector:
+    matchLabels:
+      k8s-app: static-web-app
+  template:
+    metadata:
+      labels:
+        k8s-app: static-web-app
+        k8s-scope: gke-ws-doit-lab-03
+    spec:
+      containers:
+      - name: static-web-app-c
+        image: doitlabs/web-app-static:1.0.5
+        env:
+        - name: C_MESSAGE
+          value: "Stay Awhile & Listen; Lab-3"
+# The affinity rules for this deployment require a node in region europe-west1, and prefer one in europe-west1-d (but will also schedule elsewhere).
+# If a node with n2 instance family label is available for scheduling it gets preferred over others:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: topology.kubernetes.io/region
+            operator: In
+            values:
+            - europe-west1
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        preference:
+          matchExpressions:
+          - key: topology.kubernetes.io/zone
+            operator: In
+            values:
+            - europe-west1-d
+      - weight: 20
+        preference:
+          matchExpressions:
+          - key: cloud.google.com/machine-family
+            operator: In
+            values:
+            - n2
+    podAntiAffinity: 
+      preferredDuringSchedulingIgnoredDuringExecution: 
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: k8s-app 
+              operator: In 
+              values:
+              - static-web-app
+          topologyKey: kubernetes.io/hostname
