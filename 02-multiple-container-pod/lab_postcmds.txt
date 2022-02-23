@@ -33,3 +33,12 @@
 5. You can also jump directly into a sh-terminal of the started pod (second container, 002-static-web-app-sidecar-c)
 
 -> $ kubectl exec -it static-web-app-advanced -c 002-static-web-app-sidecar-c -n doit-lab-02 -- sh
+
+6. SSH into the node in the nodepool:
+-> $ gcloud compute ssh <mynodename>
+
+7. List containers on node:
+-> $ crictl ps
+
+8. Attach shell to container:
+-> $ crictl exec -ti <containerid> sh
