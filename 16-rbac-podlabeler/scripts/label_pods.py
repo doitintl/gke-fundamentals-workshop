@@ -27,7 +27,7 @@ def run_labeler():
     while True:
         print("Attempting to list pods")
 
-        # Retrieve all pods in the default namespace and iter over each.
+        # Retrieve all pods in the namespace and iter over each.
         ret = v1.list_namespaced_pod("doit-lab-16", watch=False)
         for i in ret.items:
             print("labeling pod %s" % i.metadata.name)

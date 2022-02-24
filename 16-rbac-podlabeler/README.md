@@ -1,4 +1,4 @@
-# GKE Workshop LAB-15
+# GKE Workshop LAB-16
 
 ## Container-native load balancing via NEG
 
