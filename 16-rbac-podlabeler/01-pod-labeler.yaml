@@ -60,5 +60,5 @@ spec:
       # Set the serviceAccount so RBAC rules apply
       serviceAccount: pod-labeler
       containers:
-      - image: lstiebeldoit/pod-labeler:1.5.0
+      - image: lstiebeldoit/pod-labeler:1.6.0
         name: pod-labeler
