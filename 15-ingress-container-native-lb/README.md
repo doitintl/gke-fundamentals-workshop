@@ -112,9 +112,10 @@ kubectl describe ingress neg-demo-ing -n doit-lab-15
 
 Then verify funtionality and count distinct responses by running:
 ```bash
-# substitute INGRESS_IP and run this command to send 100 requests to your load balancer and count distinct responses:
-for i in `seq 1 100`; do \
-  curl --connect-timeout 1 -s INGRESS_IP && echo; \
+# un this command to send 100 requests to your load balancer and count distinct responses:
+INGRESS_IP="$(kubectl get ingress -n doit-lab-15 neg-demo-ing -o jsonpath='{.status.loadBalancer.ingress[0].ip}')"
+for i in $(seq 1 100); do \
+  curl --connect-timeout 1 -s $INGRESS_IP && echo; \
 done  | sort | uniq -c
 ```
 
