@@ -1,7 +1,6 @@
 FROM python:2.7-stretch
 
-RUN apt-get update && apt-get upgrade -y && apt-get install --no-install-recommends \
-  vim -y  \
+RUN apt-get update && apt-get upgrade -y \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
