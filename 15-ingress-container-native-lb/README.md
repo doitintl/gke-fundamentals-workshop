@@ -8,51 +8,7 @@
 [![GCloud SDK Version](https://img.shields.io/badge/gcloud%20version-359.0.0-blue.svg)](#)
 
 
-## Cluster Provisioning
-
-The present gcloud command call initializes the workshop-cluster as regional cluster configuration with one node in each of three availability zones.
-
-_If you have already initialized the cluster, you can skip this step now!_
-
-- Please make sure that you are also in the project prepared for this workshop or that your used dev/sandbox project has also been selected via `cloud init`!
-
-- Init your GKE-Cluster with a unique identifier suffix
-
-    ```bash
-    printf "%s\n" "[INIT] workshop cluster"
-    UNIQUE_CLUSTER_KEY=$RANDOM; gcloud container clusters create workshop-${UNIQUE_CLUSTER_KEY} \
-    --machine-type n2-standard-2 \
-    --scopes "https://www.googleapis.com/auth/source.read_write,cloud-platform" \
-    --region europe-west1 \
-    --node-locations europe-west1-b,europe-west1-c,europe-west1-d \
-    --release-channel stable \
-    --disk-type "pd-ssd" \
-    --disk-size "60" \
-    --num-nodes "1" \
-    --max-nodes "1" \
-    --min-nodes "1" \
-    --logging=SYSTEM,WORKLOAD \
-    --monitoring=SYSTEM \
-    --network "default" \
-    --addons HorizontalPodAutoscaling,HttpLoadBalancing,NodeLocalDNS \
-    --labels k8s-scope=gke-workshop-doit,k8s-cluster=primary,k8s-env=workshop && \
-    printf "%s\n" "[INIT] test access new cluster using k8s API via kubectl" \
-    kubectl get all --all-namespaces && kubectl cluster-info && \
-    printf "\n%s\n\n" "[INIT] workshop cluster finally initialized and available by ID -> [ workshop-${UNIQUE_CLUSTER_KEY} ] <-"
-    ```
-
-- (optional) If it is necessary to re-authenticate to the created GKE cluster (e.g. to run kubectl commands) the following command may help:
-
-    ```bash
-    gcloud container clusters get-credentials workshop-${UNIQUE_CLUSTER_KEY}
-    ```
-
-
-
-## Cluster Application Deployment
-
-Make sure you handled all previous steps of this README! Now, as announced, we perform the actual deployment of the kubernetes-dashboard and provision an access-authorized user for token-based authentication at the frontend of the application.
-
+## Deployment
 1. Run deployment
   ```bash
   kubectl apply -f . 
@@ -134,8 +90,6 @@ kubectl delete -f .
 ## Links
 
 - https://cloud.google.com/sdk/gcloud/reference/container/clusters/create
-- https://github.com/kubernetes/dashboard/blob/master/docs/user/installation.md
-- https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md
 - https://kubernetes.io/docs/reference/kubectl/cheatsheet/
 - https://phoenixnap.com/kb/kubectl-commands-cheat-sheet
 

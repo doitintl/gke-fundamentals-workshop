@@ -81,8 +81,6 @@ _If you have already initialized the cluster, you can skip this step now!_
 
 ## Cluster Application Deployment
 
-Make sure you handled all previous steps of this README! Now, as announced, we perform the actual deployment of the kubernetes-dashboard and provision an access-authorized user for token-based authentication at the frontend of the application.
-
 1. Run deployment
   ```bash
   kubectl apply -f . 
@@ -155,8 +153,6 @@ kubectl delete -f .
 ## Links
 
 - https://cloud.google.com/sdk/gcloud/reference/container/clusters/create
-- https://github.com/kubernetes/dashboard/blob/master/docs/user/installation.md
-- https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md
 - https://kubernetes.io/docs/reference/kubectl/cheatsheet/
 - https://phoenixnap.com/kb/kubectl-commands-cheat-sheet
 
