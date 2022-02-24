@@ -1,0 +1,11 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: neg-demo-ing
+  namespace: doit-lab-15
+spec:
+  defaultBackend:
+    service:
+      name: neg-demo-svc # Name of the Service targeted by the Ingress
+      port:
+        number: 80 # Should match the port used by the Service
