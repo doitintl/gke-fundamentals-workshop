@@ -61,5 +61,5 @@ spec:
       serviceAccount: pod-labeler
 
       containers:
-      - image: lstiebeldoit/pod-labeler:0.1.5
+      - image: lstiebeldoit/pod-labeler:1.5.0
         name: pod-labeler
