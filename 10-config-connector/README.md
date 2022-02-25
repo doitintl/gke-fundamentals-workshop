@@ -20,7 +20,7 @@ For the use of the local development environment for all GKE/K8s relevant CLI/AP
 - `gcloud sdk` [installation](https://cloud.google.com/sdk/docs/install) tutorial
 - `kubectl` [installation](https://kubernetes.io/docs/tasks/tools/) tutorial
 - `<PROJECT_ID>` is used throughout the lab as a placeholder, you can either manually update it on demand, or run the following command to find and replace (of course set your real project name instead of `INSERT_PROJECT_NAME_HERE`):
-    `grep -lr '<PROJECT_ID>' | xargs -I{} sed 's/<PROJECT_ID>/INSERT_PROJECT_NAME_HERE/g' {}`
+    `grep -lr '<PROJECT_ID>' | xargs -I{} sed -i 's/<PROJECT_ID>/INSERT_PROJECT_NAME_HERE/g' {}`
 
 ## Cluster Preparation
 
