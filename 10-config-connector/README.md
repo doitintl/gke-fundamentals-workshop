@@ -191,7 +191,7 @@ kubectl delete ns doit-lab-10
 gcloud container clusters delete workshop
 
 # optional: delete Config Connector IAM Service Account (if cluster is deleted)
-gcloud iam serviceaccount delete config-connector-sa@<PROJECT_ID>.iam.gserviceaccount.com
+gcloud iam service-accounts delete config-connector-sa@<PROJECT_ID>.iam.gserviceaccount.com
 ```
 
 ## Links

@@ -151,7 +151,7 @@ kubectl config set-context --current --namespace=doit-lab-09
 kubectl delete ns doit-lab-09
 
 # delete IAM Service Account
-gcloud iam serviceaccount delete gke-pubsub@<PROJECT_ID>.iam.gserviceaccount.com
+gcloud iam service-accounts delete gke-pubsub@<PROJECT_ID>.iam.gserviceaccount.com
 
 # delete Pub/Sub subscription and topic
 gcloud pubsub subscriptions delete echo-read
