@@ -4,8 +4,6 @@
 
 [![Context](https://img.shields.io/badge/GKE%20Fundamentals-1-blue.svg)](#)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![GKE/K8s Version](https://img.shields.io/badge/k8s%20version-1.18.20-blue.svg)](#)
-[![GCloud SDK Version](https://img.shields.io/badge/gcloud%20version-359.0.0-blue.svg)](#)
 
 ## Deployment
 
