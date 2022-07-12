@@ -10,7 +10,7 @@ spec: # Service's specification
   selector:
     run: neg-demo-app # Selects Pods labelled run: neg-demo-app
   ports:
-  - name: http
-    port: 80 # Service's port
-    protocol: TCP
-    targetPort: 9376
+    - name: http
+      port: 80 # Service's port
+      protocol: TCP
+      targetPort: 9376

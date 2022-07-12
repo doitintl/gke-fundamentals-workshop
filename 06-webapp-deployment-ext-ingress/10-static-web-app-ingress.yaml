@@ -33,4 +33,3 @@ spec:
       name: static-web-app-service
       port:
         number: 8080
-

@@ -14,17 +14,17 @@ spec:
         run: php-apache
     spec:
       containers:
-      - name: php-apache
-        image: k8s.gcr.io/hpa-example
-        ports:
-        - containerPort: 80
-        resources:
-          limits:
-            cpu: 1000m
-            memory: 1Gi
-          requests:
-            cpu: 500m
-            memory: 500Mi
+        - name: php-apache
+          image: k8s.gcr.io/hpa-example
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+            requests:
+              cpu: 500m
+              memory: 500Mi
 ---
 apiVersion: v1
 kind: Service
@@ -35,6 +35,6 @@ metadata:
     run: php-apache
 spec:
   ports:
-  - port: 80
+    - port: 80
   selector:
     run: php-apache

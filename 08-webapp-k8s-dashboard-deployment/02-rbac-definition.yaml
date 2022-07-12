@@ -23,10 +23,15 @@ metadata:
     k8s-app: kubernetes-dashboard
     k8s-scope: gke-ws-doit-lab-08
 rules:
-    # allow dashboard to get, update and delete Dashboard exclusive secrets.
+  # allow dashboard to get, update and delete Dashboard exclusive secrets.
   - apiGroups: [""]
     resources: ["secrets"]
-    resourceNames: ["kubernetes-dashboard-key-holder", "kubernetes-dashboard-certs", "kubernetes-dashboard-csrf"]
+    resourceNames:
+      [
+        "kubernetes-dashboard-key-holder",
+        "kubernetes-dashboard-certs",
+        "kubernetes-dashboard-csrf",
+      ]
     verbs: ["get", "update", "delete"]
     # allow dashboard to get and update 'kubernetes-dashboard-settings' config map.
   - apiGroups: [""]
@@ -41,11 +46,17 @@ rules:
     # allow dashboard (service/proxy) to get metrics.
   - apiGroups: [""]
     resources: ["services/proxy"]
-    resourceNames: ["heapster", "http:heapster:", "https:heapster:", "dashboard-metrics-scraper", "http:dashboard-metrics-scraper"]
+    resourceNames:
+      [
+        "heapster",
+        "http:heapster:",
+        "https:heapster:",
+        "dashboard-metrics-scraper",
+        "http:dashboard-metrics-scraper",
+      ]
     verbs: ["get"]
 
 ---
-
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -61,7 +72,6 @@ rules:
     verbs: ["get", "list", "watch"]
 
 ---
-
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
@@ -80,7 +90,6 @@ subjects:
     namespace: doit-lab-08
 
 ---
-
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -98,7 +107,6 @@ subjects:
     namespace: doit-lab-08
 
 ---
-
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:

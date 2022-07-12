@@ -79,7 +79,6 @@ spec:
           effect: NoSchedule
 
 ---
-
 #
 # workload 2/2: kubernetes dashboard metric scraper
 # --
@@ -101,7 +100,7 @@ spec:
       labels:
         k8s-app: dashboard-metrics-scraper
       annotations:
-        seccomp.security.alpha.kubernetes.io/pod: 'runtime/default'
+        seccomp.security.alpha.kubernetes.io/pod: "runtime/default"
     spec:
       containers:
         - name: dashboard-metrics-scraper

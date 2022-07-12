@@ -1,10 +1,7 @@
 # GKE Workshop LAB-12 (D)
 
-[![Context](https://img.shields.io/badge/GKE%20Fundamentals-1-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Context](https://img.shields.io/badge/GKE%20Fundamentals-1-blue.svg)](#)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![GKE/K8s Version](https://img.shields.io/badge/k8s%20version-1.18.20-blue.svg)](#)
-[![GCloud SDK Version](https://img.shields.io/badge/gcloud%20version-359.0.0-blue.svg)](#)
-[![Build Status](https://img.shields.io/badge/status-unstable-E47911.svg)](#)
 
 ## Introduction
 
@@ -13,6 +10,7 @@ In the following lab we will set up our local development environment, provision
 ## Deployment
 
 ### Create Namespace & jump into it
+
 ```bash
 kubectl apply -f 00-namespace.yaml && kubectl config set-context --current --namespace=doit-lab-12
 ```

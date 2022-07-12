@@ -48,45 +48,45 @@ spec:
         k8s-scope: gke-ws-doit-lab-03
     spec:
       containers:
-      - name: static-web-app-c
-        image: doitlabs/web-app-static:1.0.5
-        env:
-        - name: C_MESSAGE
-          value: "Stay Awhile & Listen; Lab-3"
-# The affinity rules for this deployment require a node in region europe-west1, and prefer one in europe-west1-d (but will also schedule elsewhere).
-# If a node with n2 instance family label is available for scheduling it gets preferred over others:
+        - name: static-web-app-c
+          image: doitlabs/web-app-static:1.0.5
+          env:
+            - name: C_MESSAGE
+              value: "Stay Awhile & Listen; Lab-3"
+      # The affinity rules for this deployment require a node in region europe-west1, and prefer one in europe-west1-d (but will also schedule elsewhere).
+      # If a node with n2 instance family label is available for scheduling it gets preferred over others:
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
-            - matchExpressions:
-              - key: topology.kubernetes.io/region
-                operator: In
-                values:
-                - europe-west1
+              - matchExpressions:
+                  - key: topology.kubernetes.io/region
+                    operator: In
+                    values:
+                      - europe-west1
           preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 1
-            preference:
-              matchExpressions:
-              - key: topology.kubernetes.io/zone
-                operator: In
-                values:
-                - europe-west1-d
-          - weight: 20
-            preference:
-              matchExpressions:
-              - key: cloud.google.com/machine-family
-                operator: In
-                values:
-                - n2
-        podAntiAffinity: 
-          preferredDuringSchedulingIgnoredDuringExecution: 
-          - weight: 100  
-            podAffinityTerm:
-              labelSelector:
+            - weight: 1
+              preference:
                 matchExpressions:
-                - key: k8s-app 
-                  operator: In 
-                  values:
-                  - static-web-app
-              topologyKey: kubernetes.io/hostname
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - europe-west1-d
+            - weight: 20
+              preference:
+                matchExpressions:
+                  - key: cloud.google.com/machine-family
+                    operator: In
+                    values:
+                      - n2
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: k8s-app
+                      operator: In
+                      values:
+                        - static-web-app
+                topologyKey: kubernetes.io/hostname

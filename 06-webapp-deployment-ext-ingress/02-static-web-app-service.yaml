@@ -30,9 +30,9 @@ spec:
   selector:
     k8s-app: static-web-app
   ports:
-  - protocol: TCP
-    port: 8080
-    targetPort: 80
-    # --
-    # we won't define a nodePort definition here and let k8s define a random one instead.
-    # ** nodePort: 30000
+    - protocol: TCP
+      port: 8080
+      targetPort: 80
+      # --
+      # we won't define a nodePort definition here and let k8s define a random one instead.
+      # ** nodePort: 30000

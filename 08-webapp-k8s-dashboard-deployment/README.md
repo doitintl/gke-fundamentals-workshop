@@ -4,8 +4,6 @@
 
 [![Context](https://img.shields.io/badge/GKE%20Fundamentals-1-blue.svg)](#)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![GKE/K8s Version](https://img.shields.io/badge/k8s%20version-1.18.20-blue.svg)](#)
-[![GCloud SDK Version](https://img.shields.io/badge/gcloud%20version-359.0.0-blue.svg)](#)
 
 ## Introduction
 
@@ -13,25 +11,25 @@ In the following lab we will set up our local development environment, provision
 
 ![application screenshot](../.github/media/lab-08-screenshot-small.png)
 
-
 ## Cluster Application Deployment
 
 Make sure you handled all previous steps of this README! Now, as announced, we perform the actual deployment of the kubernetes-dashboard and provision an access-authorized user for token-based authentication at the frontend of the application.
 
 1. Run deployment and fetch admin-user's access-token
-  ```bash
-  kubectl apply -f . && \
-  kubectl -n doit-lab-08 get secret $(kubectl -n doit-lab-08 get sa/admin-user -o jsonpath="{.secrets[0].name}") -o go-template="{{.data.token | base64decode}}"
-  ```
+
+```bash
+kubectl apply -f . && \
+kubectl -n doit-lab-08 get secret $(kubectl -n doit-lab-08 get sa/admin-user -o jsonpath="{.secrets[0].name}") -o go-template="{{.data.token | base64decode}}"
+```
 
 2. Start local proxy-access to gke-clusterIP based service-endpoint
 
-  _To gain appropriate access to the web front-end of the application, we need a tunneled proxy endpoint from the local machine into the GKE cluster. The following command establishes the proxy endpoint and allows us to access under [this URL](https://localhost:8443/api/v1/namespaces/doit-lab-08/services/https:kubernetes-dashboard:/proxy/#/login). Attention! The following command starts a process which can only be interrupted by IPC (CTRL+c), further shell commands are no longer possible in this terminal until you break the call by pressing CTRL+c._
-  
-  ```bash
-  kubectl port-forward service/kubernetes-dashboard 8443:443 -n doit-lab-08
-  # You can access your deployed kubernetes-dashboard via `https://localhost:8443/` now.
-  ```
+_To gain appropriate access to the web front-end of the application, we need a tunneled proxy endpoint from the local machine into the GKE cluster. The following command establishes the proxy endpoint and allows us to access under [this URL](https://localhost:8443/api/v1/namespaces/doit-lab-08/services/https:kubernetes-dashboard:/proxy/#/login). Attention! The following command starts a process which can only be interrupted by IPC (CTRL+c), further shell commands are no longer possible in this terminal until you break the call by pressing CTRL+c._
+
+```bash
+kubectl port-forward service/kubernetes-dashboard 8443:443 -n doit-lab-08
+# You can access your deployed kubernetes-dashboard via `https://localhost:8443/` now.
+```
 
 ## Optional Steps
 

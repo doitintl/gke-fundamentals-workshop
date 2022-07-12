@@ -41,101 +41,106 @@ spec:
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: app
-                  operator: In
-                  values:
-                  - cassandra
-              topologyKey: kubernetes.io/hostname
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - cassandra
+                topologyKey: kubernetes.io/hostname
       tolerations:
-      - key: app
-        operator: Equal
-        value: cassandra
-        effect: NoSchedule
+        - key: app
+          operator: Equal
+          value: cassandra
+          effect: NoSchedule
       terminationGracePeriodSeconds: 1800
       containers:
-      - name: cassandra
-        image: gcr.io/pso-examples/cassandra:3.11.4-v43
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 7000
-          name: intra-node
-        - containerPort: 7001
-          name: tls-intra-node
-        - containerPort: 7199
-          name: jmx
-        - containerPort: 9042
-          name: cql
-        resources:
-          limits:
-            cpu: "1024m"
-            memory: 1Gi
-          requests:
-           cpu: "1024m"
-           memory: 1Gi
-        securityContext:
-          capabilities:
-            add:
-              - IPC_LOCK
+        - name: cassandra
+          image: gcr.io/pso-examples/cassandra:3.11.4-v43
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 7000
+              name: intra-node
+            - containerPort: 7001
+              name: tls-intra-node
+            - containerPort: 7199
+              name: jmx
+            - containerPort: 9042
+              name: cql
+          resources:
+            limits:
+              cpu: "1024m"
+              memory: 1Gi
+            requests:
+              cpu: "1024m"
+              memory: 1Gi
+          securityContext:
+            capabilities:
+              add:
+                - IPC_LOCK
 
-        lifecycle:
-          preStop:
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - nodetool drain
+          env:
+            - name: MAX_HEAP_SIZE
+              value: 512M
+            - name: HEAP_NEWSIZE
+              value: 100M
+            - name: CASSANDRA_SEEDS
+              value: "cassandra-0.cassandra.default.svc.cluster.local"
+            - name: CASSANDRA_CLUSTER_NAME
+              value: "K8Demo"
+            - name: CASSANDRA_DC
+              value: "DC1-K8Demo"
+            - name: CASSANDRA_RACK
+              value: "Rack1-K8Demo"
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+          readinessProbe:
             exec:
               command:
-              - /bin/sh
-              - -c
-              - nodetool drain
-        env:
-          - name: MAX_HEAP_SIZE
-            value: 512M
-          - name: HEAP_NEWSIZE
-            value: 100M
-          - name: CASSANDRA_SEEDS
-            value: "cassandra-0.cassandra.default.svc.cluster.local"
-          - name: CASSANDRA_CLUSTER_NAME
-            value: "K8Demo"
-          - name: CASSANDRA_DC
-            value: "DC1-K8Demo"
-          - name: CASSANDRA_RACK
-            value: "Rack1-K8Demo"
-          - name: POD_IP
-            valueFrom:
-              fieldRef:
-                fieldPath: status.podIP
-        readinessProbe:
-          exec:
-            command:
-            - /bin/bash
-            - -c
-            - /ready-probe.sh
-          initialDelaySeconds: 15
-          timeoutSeconds: 5
-        livenessProbe:
-          exec:
-            command: [ "/bin/sh", "-c", "/usr/local/apache-cassandra/bin/nodetool status" ]
-          initialDelaySeconds: 90
-          periodSeconds: 30
-        # These volume mounts are persistent. They are like inline claims,
-        # but not exactly because the names need to match exactly one of
-        # the stateful pod volumes.
-        volumeMounts:
-        - name: cassandra-data
-          mountPath: /cassandra_data
+                - /bin/bash
+                - -c
+                - /ready-probe.sh
+            initialDelaySeconds: 15
+            timeoutSeconds: 5
+          livenessProbe:
+            exec:
+              command:
+                [
+                  "/bin/sh",
+                  "-c",
+                  "/usr/local/apache-cassandra/bin/nodetool status",
+                ]
+            initialDelaySeconds: 90
+            periodSeconds: 30
+          # These volume mounts are persistent. They are like inline claims,
+          # but not exactly because the names need to match exactly one of
+          # the stateful pod volumes.
+          volumeMounts:
+            - name: cassandra-data
+              mountPath: /cassandra_data
   # These are converted to volume claims by the controller
   # and mounted at the paths mentioned above.
   # Use SSD GCEPersistentDisk
   # For more info: https://kubernetes.io/docs/concepts/storage/persistent-volumes/
   volumeClaimTemplates:
-  - metadata:
-      name: cassandra-data
-      annotations:
-        # StorageClass is contained in his demo as well
-        volume.beta.kubernetes.io/storage-class: fast
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      resources:
-        requests:
-          storage: 10Gi
+    - metadata:
+        name: cassandra-data
+        annotations:
+          # StorageClass is contained in his demo as well
+          volume.beta.kubernetes.io/storage-class: fast
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi

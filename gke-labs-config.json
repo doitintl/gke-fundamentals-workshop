@@ -1,5 +1,5 @@
 {
-  "output" : {
+  "output": {
     "logs": false,
     "verbosity_level": 1,
     "show_logo": true,

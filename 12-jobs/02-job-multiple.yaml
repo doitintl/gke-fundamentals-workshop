@@ -32,6 +32,7 @@ spec:
       containers:
         - name: job-02-multiple-consumer-c
           image: busybox
-          command: ["/bin/sh","-c"]
-          args: ["echo 'just running a simple multiple-consumer-call job'; sleep 5"]
+          command: ["/bin/sh", "-c"]
+          args:
+            ["echo 'just running a simple multiple-consumer-call job'; sleep 5"]
       restartPolicy: OnFailure

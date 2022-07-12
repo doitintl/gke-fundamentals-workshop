@@ -1,11 +1,7 @@
 # GKE Workshop LAB-01 (B)
 
-[![Context](https://img.shields.io/badge/GKE%20Fundamentals-1-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Context](https://img.shields.io/badge/GKE%20Fundamentals-1-blue.svg)](#)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![GKE/K8s Version](https://img.shields.io/badge/k8s%20version-1.18.20-blue.svg)](#)
-[![GCloud SDK Version](https://img.shields.io/badge/gcloud%20version-359.0.0-blue.svg)](#)
-[![elasticSearch Version](https://img.shields.io/badge/elasticsearch%20version-6.2.4-green.svg)](#)
-[![Build Status](https://img.shields.io/badge/status-unstable-E47911.svg)](#)
 
 ## Introduction
 
@@ -23,6 +19,7 @@ For the use of the local development environment for all GKE/K8s relevant CLI/AP
 The preparation of the GKE cluster is one of the first steps of our workshop and is the basis for all our further activity using the local development environment of all participants. We will pave the way to our first K8s application deployment step by step in the following section, learning some of the basics of using the gcloud SDK CLI and kubectl.
 
 ## GCloud SDK Preparation
+
 ```bash
 gcloud init ;
 gcloud config set compute/zone europe-west1-b ;
@@ -68,6 +65,7 @@ gcloud container clusters get-credentials workshop
 Make sure you handled all previous steps of this README! Now, as announced, we perform the actual deployment of the kubernetes-dashboard and provision an access-authorized user for token-based authentication at the frontend of the application.
 
 ### Run Deployment
+
 ```bash
 kubectl apply -f elasticsearch-simple.yaml
 ```

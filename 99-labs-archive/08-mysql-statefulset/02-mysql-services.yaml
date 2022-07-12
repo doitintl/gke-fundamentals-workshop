@@ -28,14 +28,13 @@ metadata:
     k8s-scope: gke-ws-doit-lab-08
 spec:
   ports:
-  - name: mysql-3306
-    port: 3306
+    - name: mysql-3306
+      port: 3306
   clusterIP: None
   selector:
     k8s-app: mysql-statefulset
 
 ---
-
 #
 # Client service for connecting to any MySQL instance for reads.
 # For writes, you must instead connect to the primary: mysql-0.mysql.
@@ -50,7 +49,7 @@ metadata:
     k8s-scope: gke-ws-doit-lab-08
 spec:
   ports:
-  - name: mysql-3306
-    port: 3306
+    - name: mysql-3306
+      port: 3306
   selector:
     k8s-app: mysql-statefulset

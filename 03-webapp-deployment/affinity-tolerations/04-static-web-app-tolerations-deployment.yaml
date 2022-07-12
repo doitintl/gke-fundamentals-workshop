@@ -48,12 +48,12 @@ spec:
         k8s-scope: gke-ws-doit-lab-03
     spec:
       containers:
-      - name: static-web-app-c
-        image: doitlabs/web-app-static:1.0.5
-        env:
-        - name: C_MESSAGE
-          value: "Stay Awhile & Listen; Lab-3"
-# The Toleration in the podspec will allow our pod to be scheduled:
+        - name: static-web-app-c
+          image: doitlabs/web-app-static:1.0.5
+          env:
+            - name: C_MESSAGE
+              value: "Stay Awhile & Listen; Lab-3"
+      # The Toleration in the podspec will allow our pod to be scheduled:
       tolerations:
-      - effect: NoSchedule
-        operator: Exists
+        - effect: NoSchedule
+          operator: Exists

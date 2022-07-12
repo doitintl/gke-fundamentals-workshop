@@ -21,7 +21,6 @@ metadata:
   name: doit-lab-01-b
 
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -47,65 +46,64 @@ spec:
             claimName: elasticsearch-data
       terminationGracePeriodSeconds: 300
       initContainers:
-      - name: fix-the-volume-permission
-        image: busybox
-        command:
-        - sh
-        - -c
-        - chown -R 1000:1000 /usr/share/elasticsearch/data
-        securityContext:
-          privileged: true
-        volumeMounts:
-        - name: data
-          mountPath: /usr/share/elasticsearch/data
-      - name: increase-the-vm-max-map-count
-        image: busybox
-        command:
-        - sysctl
-        - -w
-        - vm.max_map_count=262144
-        securityContext:
-          privileged: true
-      - name: increase-the-ulimit
-        image: busybox
-        command:
-        - sh
-        - -c
-        - ulimit -n 65536
-        securityContext:
-          privileged: true
+        - name: fix-the-volume-permission
+          image: busybox
+          command:
+            - sh
+            - -c
+            - chown -R 1000:1000 /usr/share/elasticsearch/data
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: data
+              mountPath: /usr/share/elasticsearch/data
+        - name: increase-the-vm-max-map-count
+          image: busybox
+          command:
+            - sysctl
+            - -w
+            - vm.max_map_count=262144
+          securityContext:
+            privileged: true
+        - name: increase-the-ulimit
+          image: busybox
+          command:
+            - sh
+            - -c
+            - ulimit -n 65536
+          securityContext:
+            privileged: true
       containers:
-      - name: elasticsearch
-        image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.2.4
-        ports:
-        - containerPort: 9200
-          name: http
-        - containerPort: 9300
-          name: tcp
-        resources:
-          requests:
-            memory: 4Gi
-            cpu: 1000m
-          limits:
-            memory: 6Gi
-            cpu: 2000m
-        env:
-          - name: cluster.name # NOTE: the cluster name; update this
-            value: elasticsearch-cluster
-          - name: node.name
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
-          - name: discovery.type
-            value: "single-node"
-          - name: ES_JAVA_OPTS
-            value: -Xms4g -Xmx4g
-        volumeMounts:
-        - name: data
-          mountPath: /usr/share/elasticsearch/data
+        - name: elasticsearch
+          image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.2.4
+          ports:
+            - containerPort: 9200
+              name: http
+            - containerPort: 9300
+              name: tcp
+          resources:
+            requests:
+              memory: 4Gi
+              cpu: 1000m
+            limits:
+              memory: 6Gi
+              cpu: 2000m
+          env:
+            - name: cluster.name # NOTE: the cluster name; update this
+              value: elasticsearch-cluster
+            - name: node.name
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: discovery.type
+              value: "single-node"
+            - name: ES_JAVA_OPTS
+              value: -Xms4g -Xmx4g
+          volumeMounts:
+            - name: data
+              mountPath: /usr/share/elasticsearch/data
 
 ---
-
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
