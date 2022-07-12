@@ -48,8 +48,8 @@ spec:
         k8s-scope: gke-ws-doit-lab-03
     spec:
       containers:
-      - name: static-web-app-c
-        image: doitlabs/web-app-static:1.0.5
-        env:
-        - name: C_MESSAGE
-          value: "Stay Awhile & Listen; Lab-3"
+        - name: static-web-app-c
+          image: doitlabs/web-app-static:1.0.5
+          env:
+            - name: C_MESSAGE
+              value: "Stay Awhile & Listen; Lab-3"

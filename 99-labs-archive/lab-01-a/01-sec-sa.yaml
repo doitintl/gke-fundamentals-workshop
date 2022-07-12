@@ -24,7 +24,6 @@ metadata:
     k8s-scope: gke-ws-doit-lab-01-a
 
 ---
-
 apiVersion: v1
 kind: ServiceAccount
 metadata:

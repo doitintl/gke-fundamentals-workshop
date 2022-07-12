@@ -22,6 +22,7 @@ For the use of the local development environment for all GKE/K8s relevant CLI/AP
 The preparation of the GKE cluster is one of the first steps of our workshop and is the basis for all our further activity using the local development environment of all participants. We will pave the way to our first K8s application deployment step by step in the following section, learning some of the basics of using the gcloud SDK CLI and kubectl.
 
 ## GCloud SDK Preparation
+
 ```bash
 gcloud init
 gcloud config set compute/zone europe-west1-b
@@ -67,11 +68,13 @@ gcloud container clusters get-credentials workshop
 Make sure you handled all previous steps of this README! Now, as announced, we perform the actual deployment of the kubernetes-dashboard and provision an access-authorized user for token-based authentication at the frontend of the application.
 
 ### Run Deployment
+
 ```bash
 kubectl apply -f nginx-pod.yaml
 ```
 
 ### Switch Namespace
+
 You can set the current k8s context to our lab exercise namespace `doit-lab-02-a` to make sure that every command set is run against this lab resources.
 
 ```bash
@@ -79,17 +82,21 @@ kubectl config set-context --current --namespace=doit-lab-02-a
 ```
 
 ### Watch Deployment Process
+
 ```bash
 kubectl get pods --watch
 ```
 
 ### Get Details about your Pod
+
 ```bash
 kubectl describe pod nginx
 ```
 
 ### Open Local Proxy to your Pod
+
 _you can check the results by visiting http://localhost:8080_
+
 ```bash
 kubectl port-forward nginx 8080:80
 ```

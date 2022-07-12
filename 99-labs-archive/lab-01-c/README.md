@@ -8,22 +8,23 @@
 
 ## Introduction
 
-In the following lab we will set up our local development environment, provision the workshop cluster and roll out our next workload: the NGINX Operator. After learning about the controller fundamentals and the differences between con- trollers and operators, we are ready to implement an operator! The sample operator will solve a real-life task: managing a suite of NGINX servers with preconfigured static content. The operator will allow the user to specify a list of NGINX servers and config- ure static files mounted on each server. The task is not trivial and demonstrates the flexibility and power of Kubernetes. 
+In the following lab we will set up our local development environment, provision the workshop cluster and roll out our next workload: the NGINX Operator. After learning about the controller fundamentals and the differences between con- trollers and operators, we are ready to implement an operator! The sample operator will solve a real-life task: managing a suite of NGINX servers with preconfigured static content. The operator will allow the user to specify a list of NGINX servers and config- ure static files mounted on each server. The task is not trivial and demonstrates the flexibility and power of Kubernetes.
 
 ## Core Requirements
 
-For the use of the local development environment for all GKE/K8s relevant CLI/API calls a certain tool set is required and Linux or MacOS as operating system is recommended. If it is not possible to install our stack due to limitations in terms of feasibility/availability in the preparation, you can alternatively use the browser-internal cloud shell of your GCP console. 
+For the use of the local development environment for all GKE/K8s relevant CLI/API calls a certain tool set is required and Linux or MacOS as operating system is recommended. If it is not possible to install our stack due to limitations in terms of feasibility/availability in the preparation, you can alternatively use the browser-internal cloud shell of your GCP console.
 
 _please ensure that you are using the latest version of kubectl for this tutorial (version 1.16 or later). The --output-watch-events option was added relatively recently._
 
 - `gcloud sdk` [installation](https://cloud.google.com/sdk/docs/install) tutorial
-- `kubectl` [installation](https://kubernetes.io/docs/tasks/tools/) tutorial 
+- `kubectl` [installation](https://kubernetes.io/docs/tasks/tools/) tutorial
 
 ## Cluster Preparation
 
 The preparation of the GKE cluster is one of the first steps of our workshop and is the basis for all our further activity using the local development environment of all participants. We will pave the way to our first K8s application deployment step by step in the following section, learning some of the basics of using the gcloud SDK CLI and kubectl.
 
 ## GCloud SDK Preparation
+
 ```bash
 gcloud init
 gcloud config set compute/zone europe-west1-b
@@ -69,17 +70,19 @@ Once we’ve decided on the design of the main building blocks, it is time to wr
 
 ## Workload Provisioning
 
-Make sure you handled all previous steps of this README before starting this section of our lab! 
+Make sure you handled all previous steps of this README before starting this section of our lab!
 
 1. In one terminal, run the following command:
-    ```bash
-    ./nginx-controller.sh
-    ```
+
+   ```bash
+   ./nginx-controller.sh
+   ```
 
 2. In another terminal window, run:
-    ```bash
-    kubectl apply -f nginx-config-map.yaml
-    ```
+
+   ```bash
+   kubectl apply -f nginx-config-map.yaml
+   ```
 
 3. To remove resources completely, run:
    ```bash

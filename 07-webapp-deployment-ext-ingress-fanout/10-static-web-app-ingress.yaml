@@ -30,38 +30,37 @@ metadata:
     k8s-scope: gke-ws-doit-lab-07
 spec:
   rules:
-  - http:
-      paths:
+    - http:
+        paths:
+          #
+          # @info: This is our path to web-app-static:1.0.6 (v1/default)
+          # --
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: static-web-app-service-v1
+                port:
+                  number: 8080
 
-        #
-        # @info: This is our path to web-app-static:1.0.6 (v1/default)
-        # --
-        - path: /*
-          pathType: ImplementationSpecific
-          backend:
-            service:
-              name: static-web-app-service-v1
-              port:
-                number: 8080
+          #
+          # @info: This is our path to web-app-static-blue:1.0.6 (v2/blue)
+          # --
+          - path: /v2/*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: static-web-app-service-v2
+                port:
+                  number: 8080
 
-        #
-        # @info: This is our path to web-app-static-blue:1.0.6 (v2/blue)
-        # --
-        - path: /v2/*
-          pathType: ImplementationSpecific
-          backend:
-            service:
-              name: static-web-app-service-v2
-              port:
-                number: 8080
-
-        #
-        # @info: This is our path to web-app-static-green:1.0.6 (v3/green)
-        # --
-        - path: /v3/*
-          pathType: ImplementationSpecific
-          backend:
-            service:
-              name: static-web-app-service-v3
-              port:
-                number: 8080
+          #
+          # @info: This is our path to web-app-static-green:1.0.6 (v3/green)
+          # --
+          - path: /v3/*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: static-web-app-service-v3
+                port:
+                  number: 8080

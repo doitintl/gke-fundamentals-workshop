@@ -35,5 +35,8 @@ spec:
         - name: job-04-exec-limit-c
           image: busybox
           command: ["/bin/sh", "-c"]
-          args: ["echo 'just running a (always failing) parallel-consumer job'; sleep 1; exit 1;"]
+          args:
+            [
+              "echo 'just running a (always failing) parallel-consumer job'; sleep 1; exit 1;",
+            ]
       restartPolicy: OnFailure

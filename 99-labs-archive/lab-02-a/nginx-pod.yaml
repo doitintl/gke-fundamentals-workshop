@@ -18,7 +18,6 @@ metadata:
   name: doit-lab-02-a
 
 ---
-
 kind: Pod
 apiVersion: v1
 metadata:
@@ -36,7 +35,10 @@ spec:
     - name: nginx-init
       image: docker/whalesay
       command: [sh, -c]
-      args: [echo "<pre>$(cowsay -b 'Stay Awhile and Listen!')</pre>" > /data/index.html]
+      args:
+        [
+          echo "<pre>$(cowsay -b 'Stay Awhile and Listen!')</pre>" > /data/index.html,
+        ]
       volumeMounts:
         - name: data
           mountPath: /data

@@ -1,11 +1,7 @@
 {
   "region": {
     "cluster": "europe-west1",
-    "nodes": [
-      "europe-west1-b",
-      "europe-west1-c",
-      "europe-west1-d"
-    ]
+    "nodes": ["europe-west1-b", "europe-west1-c", "europe-west1-d"]
   },
   "metadata": {
     "name": "workshop-13896",
@@ -19,10 +15,6 @@
     "nodes-per-region-max": 1,
     "disk-type": "pd-ssd",
     "disk-size": "60gb",
-    "addons": [
-      "HorizontalPodAutoscaling",
-      "HttpLoadBalancing",
-      "NodeLocalDNS"
-    ]
+    "addons": ["HorizontalPodAutoscaling", "HttpLoadBalancing", "NodeLocalDNS"]
   }
 }

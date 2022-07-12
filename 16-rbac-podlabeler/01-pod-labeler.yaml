@@ -4,9 +4,9 @@ metadata:
   name: pod-labeler
   namespace: doit-lab-16
 rules:
-- apiGroups: [""] # "" refers to the core API group
-  resources: ["pods"]
-  verbs: ["list"] # "patch" is intentionally omitted for troubleshooting (see README)
+  - apiGroups: [""] # "" refers to the core API group
+    resources: ["pods"]
+    verbs: ["list"] # "patch" is intentionally omitted for troubleshooting (see README)
 
 ---
 # Create a ServiceAccount that will be bound to the role above
@@ -27,8 +27,8 @@ metadata:
   namespace: doit-lab-16
 subjects:
   # List of service accounts to bind
-- kind: ServiceAccount
-  name: pod-labeler
+  - kind: ServiceAccount
+    name: pod-labeler
 roleRef:
   # The role to bind
   kind: Role
@@ -60,5 +60,5 @@ spec:
       # Set the serviceAccount so RBAC rules apply
       serviceAccount: pod-labeler
       containers:
-      - image: lstiebeldoit/pod-labeler:1.6.0
-        name: pod-labeler
+        - image: lstiebeldoit/pod-labeler:1.6.0
+          name: pod-labeler

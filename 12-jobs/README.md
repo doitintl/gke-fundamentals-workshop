@@ -13,6 +13,7 @@ In the following lab we will set up our local development environment, provision
 ## Deployment
 
 ### Create Namespace & jump into it
+
 ```bash
 kubectl apply -f 00-namespace.yaml && kubectl config set-context --current --namespace=doit-lab-12
 ```

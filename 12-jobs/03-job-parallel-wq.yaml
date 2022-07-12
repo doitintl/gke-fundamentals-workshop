@@ -30,6 +30,9 @@ spec:
       containers:
         - name: job-03-parallel-wq-c
           image: busybox
-          command: ["/bin/sh","-c"]
-          args: ["echo 'just running a parallel-consumer job'; sleep $(shuf -i 3-9 -n 1)"]
+          command: ["/bin/sh", "-c"]
+          args:
+            [
+              "echo 'just running a parallel-consumer job'; sleep $(shuf -i 3-9 -n 1)",
+            ]
       restartPolicy: OnFailure

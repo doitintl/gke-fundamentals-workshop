@@ -47,9 +47,9 @@ spec:
     - name: static-web-app-c
       image: doitlabs/web-app-static:1.0.5
       env:
-      - name: C_MESSAGE
-        value: "Stay Awhile & Listen; Lab-1"
+        - name: C_MESSAGE
+          value: "Stay Awhile & Listen; Lab-1"
       ports:
-      - name: http-80
-        containerPort: 80
-        protocol: TCP
+        - name: http-80
+          containerPort: 80
+          protocol: TCP

@@ -4,7 +4,6 @@ metadata:
   name: doit-lab-01-c
 
 ---
-
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -15,4 +14,3 @@ metadata:
     k8s-scope: gke-ws-doit-lab-01-c
 data:
   index.html: Stay Awhile and Listen!
-

@@ -18,7 +18,6 @@ metadata:
   name: doit-lab-02-bc
 
 ---
-
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -43,94 +42,93 @@ spec:
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchExpressions:
-                - key: "k8s-app"
-                  operator: In
-                  values:
-                  - elasticsearch
-            topologyKey: "topology.kubernetes.io/zone"
+            - labelSelector:
+                matchExpressions:
+                  - key: "k8s-app"
+                    operator: In
+                    values:
+                      - elasticsearch
+              topologyKey: "topology.kubernetes.io/zone"
       terminationGracePeriodSeconds: 300
       initContainers:
-      # NOTE: This is to fix the permission on the volume - by default elasticsearch container is not run as non-root user.
-      # https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#_notes_for_production_use_and_defaults
-      - name: fix-the-volume-permission
-        image: busybox
-        command:
-        - sh
-        - -c
-        - chown -R 1000:1000 /usr/share/elasticsearch/data
-        securityContext:
-          privileged: true
-        volumeMounts:
-        - name: data
-          mountPath: /usr/share/elasticsearch/data
-      # NOTE: To increase the default vm.max_map_count to 262144 https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-cli-run-prod-mode
-      - name: increase-the-vm-max-map-count
-        image: busybox
-        command:
-        - sysctl
-        - -w
-        - vm.max_map_count=262144
-        securityContext:
-          privileged: true
-      # NOTE: To increase the u-limit https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#_notes_for_production_use_and_defaults
-      - name: increase-the-ulimit
-        image: busybox
-        command:
-        - sh
-        - -c
-        - ulimit -n 65536
-        securityContext:
-          privileged: true
+        # NOTE: This is to fix the permission on the volume - by default elasticsearch container is not run as non-root user.
+        # https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#_notes_for_production_use_and_defaults
+        - name: fix-the-volume-permission
+          image: busybox
+          command:
+            - sh
+            - -c
+            - chown -R 1000:1000 /usr/share/elasticsearch/data
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: data
+              mountPath: /usr/share/elasticsearch/data
+        # NOTE: To increase the default vm.max_map_count to 262144 https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-cli-run-prod-mode
+        - name: increase-the-vm-max-map-count
+          image: busybox
+          command:
+            - sysctl
+            - -w
+            - vm.max_map_count=262144
+          securityContext:
+            privileged: true
+        # NOTE: To increase the u-limit https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#_notes_for_production_use_and_defaults
+        - name: increase-the-ulimit
+          image: busybox
+          command:
+            - sh
+            - -c
+            - ulimit -n 65536
+          securityContext:
+            privileged: true
       containers:
-      - name: elasticsearch
-        image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.2.4
-        ports:
-        - containerPort: 9200
-          name: http
-        - containerPort: 9300
-          name: tcp
-        # NOTE: you can increase this resources
+        - name: elasticsearch
+          image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.2.4
+          ports:
+            - containerPort: 9200
+              name: http
+            - containerPort: 9300
+              name: tcp
+          # NOTE: you can increase this resources
+          resources:
+            requests:
+              memory: 6Gi
+              cpu: 1000m
+            limits:
+              memory: 12Gi
+              cpu: 2000m
+          env:
+            # NOTE: the cluster name; update this
+            - name: cluster.name
+              value: elasticsearch-cluster
+            - name: node.name
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            # NOTE: This will tell the elasticsearch node where to connect to other nodes to form a cluster. The headless service returns one IP per pod in ready state.
+            - name: discovery.zen.ping.unicast.hosts
+              value: "elasticsearch-discovery.doit-lab-02-bc.svc.cluster.local"
+            - name: discovery.zen.minimum_master_nodes
+              value: "2"
+            # NOTE: You can increase the heap size
+            - name: ES_JAVA_OPTS
+              value: -Xms6g -Xmx6g
+          volumeMounts:
+            - name: data
+              mountPath: /usr/share/elasticsearch/data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: premium-rwo
         resources:
           requests:
-            memory: 6Gi
-            cpu: 1000m
-          limits:
-            memory: 12Gi
-            cpu: 2000m
-        env:
-          # NOTE: the cluster name; update this
-          - name: cluster.name
-            value: elasticsearch-cluster
-          - name: node.name
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
-          # NOTE: This will tell the elasticsearch node where to connect to other nodes to form a cluster. The headless service returns one IP per pod in ready state.
-          - name: discovery.zen.ping.unicast.hosts
-            value: "elasticsearch-discovery.doit-lab-02-bc.svc.cluster.local"
-          - name: discovery.zen.minimum_master_nodes
-            value: "2"
-          # NOTE: You can increase the heap size
-          - name: ES_JAVA_OPTS
-            value: -Xms6g -Xmx6g
-        volumeMounts:
-        - name: data
-          mountPath: /usr/share/elasticsearch/data
-  volumeClaimTemplates:
-  - metadata:
-      name: data
-    spec:
-      accessModes:
-        - ReadWriteOnce
-      storageClassName: premium-rwo
-      resources:
-        requests:
-          storage: 100Gi
+            storage: 100Gi
 
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -143,13 +141,12 @@ spec:
   selector:
     k8s-app: elasticsearch
   ports:
-  - name: transport
-    port: 9300
-    protocol: TCP
+    - name: transport
+      port: 9300
+      protocol: TCP
   clusterIP: None
 
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -162,7 +159,7 @@ spec:
   selector:
     k8s-app: elasticsearch
   ports:
-  - name: http
-    port: 9200
-    protocol: TCP
+    - name: http
+      port: 9200
+      protocol: TCP
   clusterIP: None

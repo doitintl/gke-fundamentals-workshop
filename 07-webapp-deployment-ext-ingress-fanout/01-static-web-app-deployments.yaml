@@ -48,14 +48,13 @@ spec:
         k8s-scope: gke-ws-doit-lab-07
     spec:
       containers:
-      - name: static-web-app-v1-c
-        image: doitlabs/web-app-static:1.0.6
-        env:
-        - name: C_MESSAGE
-          value: "Stay Awhile & Listen; Lab-7-v1"
+        - name: static-web-app-v1-c
+          image: doitlabs/web-app-static:1.0.6
+          env:
+            - name: C_MESSAGE
+              value: "Stay Awhile & Listen; Lab-7-v1"
 
 ---
-
 #
 # @info: This is our deployment manifest for web-app-static-blue:1.0.6 (v2)
 # --
@@ -86,7 +85,6 @@ spec:
               value: "Stay Awhile & Listen; Lab-7-v2"
 
 ---
-
 #
 # @info: This is our deployment manifest for web-app-static-green:1.0.6 (v3)
 # --

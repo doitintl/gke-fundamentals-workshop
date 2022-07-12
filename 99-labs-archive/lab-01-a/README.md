@@ -24,6 +24,7 @@ The preparation of the GKE cluster is one of the first steps of our workshop and
 ## GCloud SDK Preparation
 
 This gcloud command initializes your
+
 ```bash
 gcloud init ;
 ```
@@ -71,6 +72,7 @@ gcloud container clusters get-credentials workshop
 Make sure you handled all previous steps of this README! Now, as announced, we perform the actual deployment of the kubernetes-dashboard and provision an access-authorized user for token-based authentication at the frontend of the application.
 
 ### Run Deployment and fetch Admin-User Access-Token
+
 ```bash
 kubectl apply -f k8s-dashboard.yaml && \
 kubectl -n doit-lab-01-a get secret $(kubectl -n doit-lab-01-a get sa/admin-user -o jsonpath="{.secrets[0].name}") -o go-template="{{.data.token | base64decode}}" ;

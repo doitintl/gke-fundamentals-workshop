@@ -10,9 +10,11 @@
 ## Introduction
 
 In the following lab we will set up our local development environment, provision the workshop cluster and roll out our next application, elasticsearch ([source](https://www.elastic.co/guide/en/cloud-on-k8s/current/k8s-quickstart.html)) single-node stack. This lab will give us an additional insight into the standard Kubernetes resources, clarify an important approach regarding the PV/PVCs and provide a control base for our next-step labs.
+
 ## Deployment
 
 ### Run Deployment
+
 ```bash
 kubectl apply -f 00-namespace.yaml
 kubectl apply -f 01-elasticsearch-simple.yaml
