@@ -4,6 +4,8 @@ metadata:
   name: neg-demo-svc # Name of Service
   namespace: doit-lab-15
   annotations:
+    # NEG is the default under certain conditions and does not need to be enabled explicitly
+    # https://cloud.google.com/kubernetes-engine/docs/concepts/ingress#container-native_load_balancing
     cloud.google.com/neg: '{"ingress": true}' # Creates a NEG after an Ingress is created
 spec: # Service's specification
   type: ClusterIP
