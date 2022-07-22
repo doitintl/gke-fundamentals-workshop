@@ -64,10 +64,10 @@ HTTP response body: {"kind":"Status","apiVersion":"v1","metadata":{},"status":"F
     verbs: ["list"]
 ```
 
-6. Looks like our podlabeler does not have suffucient permissions to PATCH pods and can only list them. Let's fix this and then check the labels on our pods:
+6. Looks like our podlabeler does not have sufficient permissions to PATCH pods and can only list them. Let's fix this and then check the labels on our pods:
 
 ```bash
-  kubectl apply -f 02-pod-labeler-fix.yaml
+  kubectl auth reconcile -f 02-pod-labeler-fix.yaml
   kubectl get pods --show-labels -n doit-lab-16
 ```
 
