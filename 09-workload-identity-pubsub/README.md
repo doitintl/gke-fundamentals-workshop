@@ -29,9 +29,12 @@ gcloud config set compute/zone europe-west1-b
 
 ## Cluster Provisioning
 
-The present gcloud command call initializes the workshop in a configuration that is as compatible as possible for all upcoming labs. If you have already initialized the cluster, you can skip this step!
+Update `${GCP_PROJECT}` with the correct project name throughout the tutorial:
+```bash
+export GCP_PROJECT=$(gcloud config get core/project)
+```
 
-Update `<PROJECT_ID>` with the correct project name throughout the tutorial.
+The present gcloud command call initializes the workshop in a configuration that is as compatible as possible for all upcoming labs. If you have already initialized the cluster, you can skip this step!
 
 ```bash
 gcloud container clusters create workshop \
@@ -47,7 +50,7 @@ gcloud container clusters create workshop \
 --monitoring=SYSTEM \
 --scopes "https://www.googleapis.com/auth/source.read_write,cloud-platform" \
 --labels k8s-scope=kubernetes-workshop-doit,k8s-cluster=primary,environment=workshop \
---workload-pool=<PROJECT_ID>.svc.id.goog && \
+--workload-pool=${GCP_PROJECT}.svc.id.goog && \
 kubectl cluster-info
 ```
 
@@ -82,19 +85,19 @@ Workload Identity works by creating a relationship between a Google Service Acco
 
 ```bash
 gcloud iam service-accounts create gke-pubsub \
-    --project=<PROJECT_ID>
+    --project=${GCP_PROJECT}
 
-gcloud projects add-iam-policy-binding <PROJECT_ID> \
-    --member "serviceAccount:gke-pubsub@<PROJECT_ID>.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding ${GCP_PROJECT} \
+    --member "serviceAccount:gke-pubsub@${GCP_PROJECT}.iam.gserviceaccount.com" \
     --role "roles/pubsub.subscriber"
 ```
 
 Now that we created the GSA, we need to bind the KSA to it. This is done by granting the KSA the `roles/iam.workloadIdentityUser` IAM role on the GSA:
 
 ```bash
-gcloud iam service-accounts add-iam-policy-binding gke-pubsub@<PROJECT_ID>.iam.gserviceaccount.com \
+gcloud iam service-accounts add-iam-policy-binding gke-pubsub@${GCP_PROJECT}.iam.gserviceaccount.com \
     --role roles/iam.workloadIdentityUser \
-    --member "serviceAccount:<PROJECT_ID>.svc.id.goog[doit-lab-09/pubsub-sa]"
+    --member "serviceAccount:${GCP_PROJECT}.svc.id.goog[doit-lab-09/pubsub-sa]"
 ```
 
 Eventually, we annotate the KSA with the GSA email address:
@@ -102,7 +105,7 @@ Eventually, we annotate the KSA with the GSA email address:
 ```bash
 kubectl annotate serviceaccount pubsub-sa \
     --namespace doit-lab-09 \
-    iam.gke.io/gcp-service-account=gke-pubsub@<PROJECT_ID>.iam.gserviceaccount.com
+    iam.gke.io/gcp-service-account=gke-pubsub@${GCP_PROJECT}.iam.gserviceaccount.com
 ```
 
 ## Cluster Application Deployment
@@ -149,7 +152,7 @@ kubectl config set-context --current --namespace=doit-lab-09
 kubectl delete ns doit-lab-09
 
 # delete IAM Service Account
-gcloud iam serviceaccount delete gke-pubsub@<PROJECT_ID>.iam.gserviceaccount.com
+gcloud iam service-accounts delete gke-pubsub@${GCP_PROJECT}.iam.gserviceaccount.com
 
 # delete Pub/Sub subscription and topic
 gcloud pubsub subscriptions delete echo-read
