@@ -1,3 +1,5 @@
+# When you use the Google Cloud console, HorizontalPodAutoscaler objects are created using the autoscaling/v2beta2 API.
+# https://cloud.google.com/kubernetes-engine/docs/how-to/horizontal-pod-autoscaling#api-versions
 apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -17,9 +19,10 @@ spec:
         target:
           type: Utilization
           averageUtilization: 50
+  # default behavior: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#default-behavior
   behavior:
     scaleDown:
-      stabilizationWindowSeconds: 300
+      stabilizationWindowSeconds: 0
       policies:
         - type: Percent
           value: 25
