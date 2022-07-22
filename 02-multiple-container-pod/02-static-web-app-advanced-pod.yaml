@@ -46,15 +46,15 @@ spec:
   # --
   containers:
     - name: 001-static-web-app-c
-      image: doitlabs/web-app-static:1.0.5
-      env:
-        - name: C_MESSAGE
-          value: "Stay Awhile & Listen; Lab-2"
+      image: nginx:alpine
       ports:
         - name: http-80
           containerPort: 80
           protocol: TCP
-
+      volumeMounts:
+        - mountPath: /usr/share/nginx/html/index.html
+          name: index-html
+          subPath: index.html
     - name: 002-static-web-app-sidecar-c
       image: busybox:1.28
       command: ["sh", "-c"]
@@ -63,6 +63,10 @@ spec:
           echo "I'm really busy right now ... please come back later!";
           sleep 30;
           done;
+  volumes:
+    - name: index-html
+      configMap:
+        name: static-web-app-advanced-index
 
   #
   # An Init-container in Kubernetes is a special type of container that runs to completion before the main app’s container
