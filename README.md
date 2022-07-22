@@ -84,7 +84,7 @@ The present gcloud command call initializes the workshop-cluster as regional clu
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-See [LICENSE](LICENSE) for full details.
+See [LICENSE](LICENSE.md) for full details.
 
     Licensed to the Apache Software Foundation (ASF) under one
     or more contributor license agreements.  See the NOTICE file
