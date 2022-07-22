@@ -2,6 +2,8 @@
 
 ## Scaling a deployment using HPA
 
+<!-- Source: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/ -->
+
 [![Context](https://img.shields.io/badge/GKE%20Fundamentals-1-blue.svg)](#)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 

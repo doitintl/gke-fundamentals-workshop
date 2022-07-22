@@ -21,8 +21,6 @@ metadata:
     k8s-app: job-03-exec-limit
     k8s-scope: gke-ws-doit-lab-12
 spec:
-  # try to run 5 times before considering a Job as failed
-  backoffLimit: 5
   # once a Job reaches activeDeadlineSeconds, all of its running Pods
   # are terminated and the Job status will become type: Failed with
   # reason: DeadlineExceeded.
@@ -30,6 +28,9 @@ spec:
   template:
     metadata:
       name: job-04-exec-limit-tpl
+      labels:
+        k8s-app: job-03-exec-limit
+        k8s-scope: gke-ws-doit-lab-12
     spec:
       containers:
         - name: job-04-exec-limit-c
@@ -37,6 +38,6 @@ spec:
           command: ["/bin/sh", "-c"]
           args:
             [
-              "echo 'just running a (always failing) parallel-consumer job'; sleep 1; exit 1;",
+              "echo 'just running a (always failing) parallel-consumer job'; sleep 30;",
             ]
       restartPolicy: OnFailure

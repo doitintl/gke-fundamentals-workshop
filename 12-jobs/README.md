@@ -57,7 +57,7 @@ kubectl apply -f 04-job-exec-limit.yaml && kubectl get pods --watch
 
 When a Kubernetes Job finishes, neither the Job nor the pods that it created get deleted automatically. You have to remove them manually. This feature ensures that you are still able to view the logs and the status of the finished Job and its pods.
 
-It’s worth noting that there is a new feature in Kubernetes that allows you to specify the number of seconds after which a completed Job gets deleted together with its pods. This feature uses the TTL controller. Notice that this feature is still in alpha state.
+It’s worth noting that there is a new feature in Kubernetes that allows you to specify the number of seconds after which a completed Job gets deleted together with its pods. This feature uses the TTL controller. Notice that this feature is considered stable as of 1.22 and beta as of 1.21.
 
 ```bash
 kubectl apply -f 05-job-ttl.yaml && kubectl get pods --watch

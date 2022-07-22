@@ -26,7 +26,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: static-web-app-deployment-tolerations
+  name: static-web-app-deployment
   namespace: doit-lab-03
   labels:
     k8s-app: static-web-app
@@ -48,12 +48,15 @@ spec:
         k8s-scope: gke-ws-doit-lab-03
     spec:
       containers:
-        - name: static-web-app-c
-          image: doitlabs/web-app-static:1.0.5
-          env:
-            - name: C_MESSAGE
-              value: "Stay Awhile & Listen; Lab-3"
-      # The Toleration in the podspec will allow our pod to be scheduled:
-      tolerations:
-        - effect: NoSchedule
-          operator: Exists
+        - name: nginx
+          image: nginx:alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /usr/share/nginx/html/index.html
+              name: index-html
+              subPath: index.html
+      volumes:
+        - name: index-html
+          configMap:
+            name: static-web-app-index

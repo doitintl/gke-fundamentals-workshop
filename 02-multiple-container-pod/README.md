@@ -7,9 +7,9 @@
 
 ## Introduction
 
-In the following lab we will set up our local development environment, provision the workshop cluster and roll out our static web application example ([source](https://github.com/doitintl/labs-web-app-static) with an additional sidecar and init-container. Your deployment won't be exposed and is only available by ClusterIP of the corresponding pod-service. You can access the application by tunneling your localhost through `kubectl proxy` command.
+In the following lab we will set up our local development environment, provision the workshop cluster and roll out our static web application example with an additional sidecar and init-container. Your deployment won't be exposed and is only available by ClusterIP of the corresponding pod-service. You can access the application by tunneling your localhost through `kubectl proxy` command, or `kubectl port-forward`.
 
-![application screenshot](../.github/media/lab-02-screenshot-small.png)
+<!-- ![application screenshot](../.github/media/lab-02-screenshot-small.png) -->
 
 ## Deployment
 
@@ -34,10 +34,10 @@ kubectl get pods -n doit-lab-02
 kubectl logs -f -l k8s-app=static-web-app-advanced -n doit-lab-02 -c 001-static-web-app-c
 
 # logs of web applications sidecar (container=002-static-web-app-sidecar-c)
-kubectl logs -f -l k8s-app=static-web-app-advanced -n doit-lab-02 -c 001-static-web-app-c
+kubectl logs -f -l k8s-app=static-web-app-advanced -n doit-lab-02 -c 002-static-web-app-sidecar-c
 
 # logs of pod's primary init container (container=000-static-web-app-advanced-init-c)
-kubectl logs -f -l k8s-app=static-web-app-advanced -n doit-lab-02 -c 001-static-web-app-c
+kubectl logs -f -l k8s-app=static-web-app-advanced -n doit-lab-02 -c 000-static-web-app-advanced-init-c
 ```
 
 3. You can access this pod from your local environment by kubectl port-forwarding & access the app by hitting url `http://localhost:8080`
@@ -53,9 +53,6 @@ kubectl port-forward pod/static-web-app-advanced 8080:80 -n doit-lab-02
 kubectl exec -it static-web-app-advanced -c 001-static-web-app-c -n doit-lab-02 -- sh
 
 # web applications sidecar (container=002-static-web-app-sidecar-c, will run for 60s)
-kubectl exec -it static-web-app-advanced -c 002-static-web-app-sidecar-c -n doit-lab-02 -- sh
-
-# You can also jump directly into a sh-terminal of the started pod (second container, 002-static-web-app-sidecar-c)
 kubectl exec -it static-web-app-advanced -c 002-static-web-app-sidecar-c -n doit-lab-02 -- sh
 ```
 
