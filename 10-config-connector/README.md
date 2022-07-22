@@ -15,8 +15,11 @@ For the use of the local development environment for all GKE/K8s relevant CLI/AP
 
 - `gcloud sdk` [installation](https://cloud.google.com/sdk/docs/install) tutorial
 - `kubectl` [installation](https://kubernetes.io/docs/tasks/tools/) tutorial
-- `<PROJECT_ID>` is used throughout the lab as a placeholder, you can either manually update it on demand, or run the following command to find and replace (of course set your real project name instead of `INSERT_PROJECT_NAME_HERE`):
-  `grep -lr '<PROJECT_ID>' | xargs -I{} sed 's/<PROJECT_ID>/INSERT_PROJECT_NAME_HERE/g' {}`
+- `${GCP_PROJECT}` is used throughout the lab as a placeholder, `envsubst` is used in each kubectl command that needs to evaluate this variable, so make sure to export the project name:
+
+```bash
+export GCP_PROJECT=$(gcloud config get core/project)
+```
 
 ## Cluster Preparation
 
@@ -31,9 +34,12 @@ gcloud config set compute/zone europe-west1-b
 
 ## Cluster Provisioning
 
-The present gcloud command call initializes the workshop in a configuration that is as compatible as possible for all upcoming labs. If you have already initialized the cluster, you can skip this step!
+Update `${GCP_PROJECT}` with the correct project name throughout the tutorial:
+```bash
+export GCP_PROJECT=$(gcloud config get core/project)
+```
 
-Update `<PROJECT_ID>` with the correct project name throughout the tutorial.
+The present gcloud command call initializes the workshop in a configuration that is as compatible as possible for all upcoming labs. If you have already initialized the cluster, you can skip this step!
 
 ```bash
 gcloud container clusters create workshop \
@@ -50,7 +56,7 @@ gcloud container clusters create workshop \
 --scopes "https://www.googleapis.com/auth/source.read_write,cloud-platform" \
 --labels k8s-scope=kubernetes-workshop-doit,k8s-cluster=primary,environment=workshop \
 --addons HorizontalPodAutoscaling,HttpLoadBalancing,ConfigConnector \
---workload-pool=<PROJECT_ID>.svc.id.goog && \
+--workload-pool=${GCP_PROJECT}.svc.id.goog && \
 kubectl cluster-info
 ```
 
@@ -67,8 +73,8 @@ The Config Connector controller utilizes [Workload Identity](../09-workload-iden
 ```bash
 gcloud iam service-accounts create config-connector-sa
 
-gcloud projects add-iam-policy-binding <PROJECT_ID> \
-    --member="serviceAccount:config-connector-sa@<PROJECT_ID>.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding ${GCP_PROJECT} \
+    --member="serviceAccount:config-connector-sa@${GCP_PROJECT}.iam.gserviceaccount.com" \
     --role="roles/owner"
 ```
 
@@ -76,8 +82,8 @@ Then allow the Config Connector controller KSA to use the GSA we just created:
 
 ```bash
 gcloud iam service-accounts add-iam-policy-binding \
-    config-connector-sa@<PROJECT_ID>.iam.gserviceaccount.com \
-    --member="serviceAccount:<PROJECT_ID>.svc.id.goog[cnrm-system/cnrm-controller-manager]" \
+    config-connector-sa@${GCP_PROJECT}.iam.gserviceaccount.com \
+    --member="serviceAccount:${GCP_PROJECT}.svc.id.goog[cnrm-system/cnrm-controller-manager]" \
     --role="roles/iam.workloadIdentityUser"
 ```
 
@@ -87,8 +93,8 @@ Config Connector can run either in `cluster` or in `namespaced` mode. `cluster` 
 We will configure Config Connector to run in `cluster` mode, read [here](https://cloud.google.com/config-connector/docs/how-to/advanced-install#namespaced-mode) for instructions for `namespaced` mode.
 
 ```bash
-# replace <PROJECT_ID> with the correct value in this file before applying!!
-kubectl apply -f 00-configconnector.yaml
+# replace ${GCP_PROJECT} with the correct value in this file before applying!!
+envsubst < 00-configconnector.yaml | kubectl apply -f -
 ```
 
 As mentioned above, Config Connector can create resource in the [Organization, Folder or Project level](https://cloud.google.com/config-connector/docs/how-to/organizing-resources/overview), we will focus on creating resources in the project.
@@ -99,8 +105,8 @@ For that, we will need to set an [annotation specifying the project id](https://
 In order to avoid annotating each individual resource, we will create the Namespace with the annotation setting the correct project id:
 
 ```bash
-# replace <PROJECT_ID> with the correct value in this file before applying!!
-kubectl apply -f 01-namespace.yaml
+# replace ${GCP_PROJECT} with the correct value in this file before applying!!
+envsubst < 01-namespace.yaml | kubectl apply -f -
 ```
 
 ## Create Pub/Sub topic and subscription
@@ -108,7 +114,7 @@ kubectl apply -f 01-namespace.yaml
 Similar to the previous lab, we will create a Pub/Sub topic and subscription, this time using Config Connector (I suggest reviewing the manifests):
 
 ```bash
-kubectl apply -f 02-pubsub.yaml
+envsubst < 02-pubsub.yaml | kubectl apply -f  -
 ```
 
 Wait for our newly created resources to be ready:
@@ -124,10 +130,10 @@ kubectl wait --for=condition=READY pubsubsubscription echo-read
 We will use Config Connector in conjunction with Workload Identity, to create a GSA with IAM permissions to subscribe to pubsub, then create a KSA that can use that GSA with Workload Identity.
 
 ```bash
-# replace <PROJECT_ID> with the correct value in this file before applying!!
-kubectl apply -f 03-iam.yaml
+# replace ${GCP_PROJECT} with the correct value in this file before applying!!
+envsubst < 03-iam.yaml | kubectl apply -f -
 
-kubectl apply -f 04-serviceaccount.yaml
+envsubst < 04-serviceaccount.yaml | kubectl apply -f -
 ```
 
 ### Run Deployment
@@ -189,7 +195,7 @@ kubectl delete ns doit-lab-10
 gcloud container clusters delete workshop
 
 # optional: delete Config Connector IAM Service Account (if cluster is deleted)
-gcloud iam serviceaccount delete config-connector-sa@<PROJECT_ID>.iam.gserviceaccount.com
+gcloud iam service-accounts delete config-connector-sa@${GCP_PROJECT}.iam.gserviceaccount.com
 ```
 
 ## Links
