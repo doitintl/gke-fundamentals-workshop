@@ -55,7 +55,8 @@ The present gcloud command call initializes the workshop-cluster as regional clu
 
   ```bash
   printf "%s\n" "[INIT] workshop cluster"
-  UNIQUE_CLUSTER_KEY=$RANDOM; gcloud container clusters create workshop-${UNIQUE_CLUSTER_KEY} \
+  UNIQUE_CLUSTER_KEY=$RANDOM; GCP_PROJECT=$(gcloud config get core/project);
+  gcloud container clusters create workshop-${UNIQUE_CLUSTER_KEY} \
   --machine-type n2-standard-2 \
   --scopes "https://www.googleapis.com/auth/source.read_write,cloud-platform" \
   --region europe-west1 \
@@ -69,8 +70,9 @@ The present gcloud command call initializes the workshop-cluster as regional clu
   --logging=SYSTEM,WORKLOAD \
   --monitoring=SYSTEM \
   --network "default" \
-  --addons HorizontalPodAutoscaling,HttpLoadBalancing,NodeLocalDNS \
-  --labels k8s-scope=gke-workshop-doit,k8s-cluster=primary,k8s-env=workshop && \
+  --addons HorizontalPodAutoscaling,HttpLoadBalancing,NodeLocalDNS,ConfigConnector \
+  --labels k8s-scope=gke-workshop-doit,k8s-cluster=primary,k8s-env=workshop \
+  --workload-pool=${GCP_PROJECT}.svc.id.goog && \
   printf "%s\n" "[INIT] test access new cluster using k8s API via kubectl" \
   kubectl get all --all-namespaces && kubectl cluster-info && \
   printf "\n%s\n\n" "[INIT] workshop cluster finally initialized and available by ID -> [ workshop-${UNIQUE_CLUSTER_KEY} ] <-"
