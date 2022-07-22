@@ -26,6 +26,9 @@ spec:
   template:
     metadata:
       name: job-03-parallel-wq-tpl
+      labels:
+        k8s-app: job-03-parallel-wq
+        k8s-scope: gke-ws-doit-lab-12
     spec:
       containers:
         - name: job-03-parallel-wq-c

@@ -21,21 +21,20 @@ metadata:
     k8s-app: job-05-exit-limit-with-ttl
     k8s-scope: gke-ws-doit-lab-12
 spec:
-  # try to run 5 times before considering a Job as failed
-  backoffLimit: 5
-  # once a Job reaches activeDeadlineSeconds, all of its running Pods
-  # are terminated and the Job status will become type: Failed with
-  # reason: DeadlineExceeded.
-  activeDeadlineSeconds: 20
+  # try to run 3 additional times before considering a Job as failed (default 6)
+  backoffLimit: 3
   # The Job pi-with-ttl will be eligible to be automatically deleted,
-  # 60 seconds after it finishes. If the field is set to 0, the Job
+  # 30 seconds after it finishes. If the field is set to 0, the Job
   # will be eligible to be automatically deleted immediately after it
   # finishes. If the field is unset, this Job won't be cleaned up by
   # the TTL controller after it finishes.
-  ttlSecondsAfterFinished: 60
+  ttlSecondsAfterFinished: 30
   template:
     metadata:
       name: job-05-exit-limit-with-ttl-tpl
+      labels:
+        k8s-app: job-05-exit-limit-with-ttl
+        k8s-scope: gke-ws-doit-lab-12
     spec:
       containers:
         - name: job-05-exit-limit-with-ttl-c
@@ -45,4 +44,4 @@ spec:
             [
               "echo 'just running another (always failing) consumer job'; sleep 1; exit 1",
             ]
-      restartPolicy: OnFailure
+      restartPolicy: Never

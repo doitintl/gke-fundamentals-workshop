@@ -24,6 +24,9 @@ spec:
   template:
     metadata:
       name: job-01-simple-tpl
+      labels:
+        k8s-app: job-01-simple
+        k8s-scope: gke-ws-doit-lab-12
     spec:
       containers:
         - name: job-01-simple-c
