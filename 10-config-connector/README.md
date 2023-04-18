@@ -120,9 +120,9 @@ envsubst < 02-pubsub.yaml | kubectl apply -f  -
 Wait for our newly created resources to be ready:
 
 ```bash
-kubectl wait --for=condition=READY pubsubtopics echo
+kubectl -n doit-lab-10 wait --for=condition=READY pubsubtopics echo
 
-kubectl wait --for=condition=READY pubsubsubscription echo-read
+kubectl -n doit-lab-10 wait --for=condition=READY pubsubsubscription echo-read
 ```
 
 ## Create KSA, GSA and IAM bindings
@@ -142,7 +142,7 @@ envsubst < 04-serviceaccount.yaml | kubectl apply -f -
 kubectl apply -f 05-pubsub-deployment.yaml
 
 # wait for pod to be ready, break this command once ready
-kubectl get pod --watch --selector app=pubsub
+kubectl -n doit-lab-10 get pod --watch --selector app=pubsub
 ```
 
 ### Test the Pub/Sub connection
@@ -150,7 +150,7 @@ kubectl get pod --watch --selector app=pubsub
 Now we can tail the logs of our newly created pod, then post a message to the Pub/Sub topic and verify the connection:
 
 ```bash
-kubectl logs -f --selector app=pubsub
+kubectl -n doit-lab-10 logs -f --selector app=pubsub
 ```
 
 In another terminal window, post a message to the echo topic:
@@ -192,7 +192,7 @@ Inspect each YAML manifest before applying, describe created resources with `kub
 kubectl delete ns doit-lab-10
 
 # optional: delete GKE cluster
-gcloud container clusters delete workshop
+gcloud container clusters delete workshop --region europe-west1
 
 # optional: delete Config Connector IAM Service Account (if cluster is deleted)
 gcloud iam service-accounts delete config-connector-sa@${GCP_PROJECT}.iam.gserviceaccount.com
