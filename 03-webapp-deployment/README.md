@@ -9,8 +9,6 @@
 
 In the following lab we will set up our local development environment, provision the workshop cluster and roll out our static web application example. Your deployment won't be exposed and is only available by ClusterIP of the corresponding pod-service. You can access the application by tunneling your localhost through `kubectl proxy` command, or `kubectl port-forward`.
 
-<!-- ![application screenshot](../.github/media/lab-03-screenshot-small.png) -->
-
 ## Deployment
 
 1. Run deployment
