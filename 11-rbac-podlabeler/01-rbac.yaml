@@ -1,21 +1,20 @@
+---
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: pod-labeler
-  namespace: doit-lab-16
+  namespace: doit-lab-11
 rules:
   - apiGroups: [""] # "" refers to the core API group
     resources: ["pods"]
     verbs: ["list"] # "patch" is intentionally omitted for troubleshooting (see README)
-
 ---
 # Create a ServiceAccount that will be bound to the role above
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: pod-labeler
-  namespace: doit-lab-16
-
+  namespace: doit-lab-11
 ---
 # Binds the pod-labeler ServiceAccount to the pod-labeler Role
 # Any pod using the pod-labeler ServiceAccount will be granted
@@ -24,7 +23,7 @@ kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: pod-labeler
-  namespace: doit-lab-16
+  namespace: doit-lab-11
 subjects:
   # List of service accounts to bind
   - kind: ServiceAccount
@@ -34,31 +33,3 @@ roleRef:
   kind: Role
   name: pod-labeler
   apiGroup: rbac.authorization.k8s.io
-
----
-# Deploys a single pod to run the pod-labeler code
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: pod-labeler
-  namespace: doit-lab-16
-spec:
-  replicas: 1
-
-  # Control any pod labeled with app=pod-labeler
-  selector:
-    matchLabels:
-      app: pod-labeler
-
-  template:
-    # Ensure created pods are labeled with app=pod-labeler to match the deployment selector
-    metadata:
-      labels:
-        app: pod-labeler
-
-    spec:
-      # Set the serviceAccount so RBAC rules apply
-      serviceAccount: pod-labeler
-      containers:
-        - image: lstiebeldoit/pod-labeler:1.6.0
-          name: pod-labeler

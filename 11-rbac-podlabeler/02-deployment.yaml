@@ -1,0 +1,26 @@
+---
+# Deploys a single pod to run the pod-labeler code
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pod-labeler
+  namespace: doit-lab-11
+spec:
+  replicas: 1
+  # Control any pod labeled with app=pod-labeler
+  selector:
+    matchLabels:
+      app: pod-labeler
+  template:
+    # Ensure created pods are labeled with app=pod-labeler to match the deployment selector
+    metadata:
+      labels:
+        app: pod-labeler
+    spec:
+      # Set the serviceAccount so RBAC rules apply
+      serviceAccount: pod-labeler
+      containers:
+        - image: lstiebeldoit/pod-labeler:2.0.0
+          args:
+            - doit-lab-11
+          name: pod-labeler
