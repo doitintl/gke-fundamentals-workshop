@@ -7,9 +7,7 @@
 
 ## Introduction
 
-In the following lab we will set up our local development environment, provision the workshop cluster and roll out our static web application example ([source](https://github.com/doitintl/labs-web-app-static). Your deployment will be exposed by corresponding pod-service and wait for incoming traffic through a standard External HTTP LoadBalancer (`http://<external-lb-ip>`) at port `8080`.
-
-![application screenshot](../.github/media/lab-05-screenshot-small.png)
+In the following lab we will set up our local development environment, provision the workshop cluster and roll out a static nginx page. Your deployment will be exposed by corresponding pod-service and wait for incoming traffic through a standard External HTTP LoadBalancer (`http://<external-lb-ip>`) at port `8080`.
 
 ## Deployment
 
@@ -25,6 +23,12 @@ _this step can take up to 2 Minutes_
 
 ```bash
 kubectl get service -n doit-lab-05 --watch
+```
+
+3. Confirm that a Load Balancer was created on the cloud
+
+```bash
+gcloud compute forwarding-rules list --filter='description~doit-lab-05'
 ```
 
 ## Cluster Application Check / Playground

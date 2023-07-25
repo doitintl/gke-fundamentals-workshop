@@ -32,10 +32,12 @@ spec:
   # every service, and that IP is configured to have its own load balancer configured in the cloud.
   # These add costs and overhead that is overkill for essentially every cluster with multiple svc,
   # which is almost every cluster these days.
+  # On GKE, a LoadBalancer Service will provision a L4 passthrough Network Load Balancer.
   type: LoadBalancer
   selector:
     k8s-app: static-web-app
   ports:
+    # Note that targetPort can specify a port number or a named port (if defined in the target workload).
     - protocol: TCP
       port: 8080
-      targetPort: 80
+      targetPort: http-80
