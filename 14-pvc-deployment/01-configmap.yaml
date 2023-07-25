@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-config
+  namespace: doit-lab-14
+  labels:
+    k8s-app: redis
+    k8s-scope: gke-ws-doit-lab-14
+data:
+  redis.conf: |
+    appendonly yes

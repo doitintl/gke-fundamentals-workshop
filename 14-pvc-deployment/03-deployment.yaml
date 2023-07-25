@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: doit-lab-14
+  labels:
+    k8s-app: redis
+    k8s-scope: gke-ws-doit-lab-14
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: redis
+  template:
+    metadata:
+      labels:
+        k8s-app: redis
+        k8s-scope: gke-ws-doit-lab-14
+    spec:
+      volumes:
+        - name: config
+          configMap:
+            # defaultMode: 0666
+            name: redis-config
+        - name: data
+          persistentVolumeClaim:
+            claimName: redis-data
+      containers:
+        - name: redis
+          args:
+            - redis-server
+            - /etc/redis/redis.conf
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+              name: redis
+          volumeMounts:
+            - name: config
+              mountPath: /etc/redis
+            - name: data
+              mountPath: /data
