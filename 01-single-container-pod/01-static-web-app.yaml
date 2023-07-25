@@ -39,16 +39,12 @@ metadata:
     k8s-scope: gke-ws-doit-lab-01
 spec:
   #
-  # This is our primary container, which carries a simple static web application and opens a dedicated
-  # container port (http-80). We can describe some content elements of the application by means of env-
-  # variables, e.g. the variable 'C_MESSAGE' overwrites the default welcome text of the application.
+  # This is our primary container, which carries a simple static web server and opens a dedicated
+  # container port (http-80).
   # --
   containers:
     - name: static-web-app-c
-      image: doitlabs/web-app-static:1.0.5
-      env:
-        - name: C_MESSAGE
-          value: "Stay Awhile & Listen; Lab-1"
+      image: nginx:alpine
       ports:
         - name: http-80
           containerPort: 80
