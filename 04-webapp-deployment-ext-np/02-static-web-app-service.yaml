@@ -31,7 +31,7 @@ spec:
   # range 30000-32767. Each node proxies that port (the same port number on every Node) into your Service.
   # You can access your service by calling the nodes external-ip and your nodePort (e.g. 90.1.1.1:30000).
   # (!) don't forget to open your firewall for that specific tcp (node) port:
-  #     gcloud compute firewall-rules create my-node-port-opened-service --allow tcp:30000
+  #     gcloud compute firewall-rules create my-node-port-opened-service --allow tcp:30000 --priority 999
   #
   type: NodePort
   selector:
