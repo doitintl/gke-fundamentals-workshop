@@ -17,10 +17,11 @@
 # @spec: https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/deployment-v1/
 #
 # @info: Here we create a simple deployment that describes a nginx-based static web application
-#        and provisions it within the cluster. You can access this app from your local environment
-#        by kubectl's port-forwarding command and access the web-application on localhost:8080 ...
+#        and provisions it within the cluster. You can access this app from the HTTP/S Load Balancer
+#        that we'll create using an Ingress object, or from your local environment using
+#        kubectl's port-forwarding command and access the web-application on localhost:8080 ...
 #
-#        $ kubectl port-forward service/static-web-app-service 8080:8080 -n doit-lab-03
+#        $ kubectl port-forward service/static-web-app-service 8080:8080 -n doit-lab-06
 # --
 #
 apiVersion: apps/v1
@@ -49,7 +50,8 @@ spec:
     spec:
       containers:
         - name: static-web-app-c
-          image: doitlabs/web-app-static:1.0.5
-          env:
-            - name: C_MESSAGE
-              value: "Stay Awhile & Listen; Lab-6"
+          image: nginx:alpine
+          ports:
+            - name: http-80
+              containerPort: 80
+              protocol: TCP

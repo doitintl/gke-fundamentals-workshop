@@ -20,19 +20,26 @@
 apiVersion: v1
 kind: Service
 metadata:
+  # This annotation is necessary for using Container Native Load Balancing if any of the following is false:
+  # - For Services created in GKE clusters 1.17.6-gke.7 and up
+  # - Using VPC-native clusters
+  # - Not using a Shared VPC
+  # - Not using GKE Network Policy
+  # --
+  # annotations:
+  #   cloud.google.com/neg: '{"ingress": true}'
   name: static-web-app-service
   namespace: doit-lab-06
   labels:
     k8s-app: static-web-app
     k8s-scope: gke-ws-doit-lab-06
 spec:
-  type: NodePort
+  # ClusterIP is the default SVC type and what should be used when utilizing Container Native Load Balancing
+  # https://cloud.google.com/kubernetes-engine/docs/how-to/container-native-load-balancing
+  type: ClusterIP
   selector:
     k8s-app: static-web-app
   ports:
     - protocol: TCP
       port: 8080
       targetPort: 80
-      # --
-      # we won't define a nodePort definition here and let k8s define a random one instead.
-      # ** nodePort: 30000
