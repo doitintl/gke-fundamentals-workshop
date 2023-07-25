@@ -17,16 +17,13 @@
 # @spec: https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/deployment-v1/
 #
 # @info: Here we create an advanced deployment that describes three nginx-based static web applications
-#        for testing fan-out ingress routing within our workshop-cluster. The following images will be deployed:
-#
-#        - doitlabs/web-app-static:1.0.6        - static-web-app-deployment-v1
-#        - doitlabs/web-app-static-blue:1.0.6   - static-web-app-deployment-v2
-#        - doitlabs/web-app-static-green:1.0.6  - static-web-app-deployment-v3
+#        for testing fan-out ingress routing within our workshop-cluster.
+#        Each deployment will mount a different nginx configuration from ConfigMap.
 # --
 #
 
 #
-# @info: This is our deployment manifest for web-app-static:1.0.6 (v1/default)
+# @info: This is our deployment manifest "v1"
 # --
 apiVersion: apps/v1
 kind: Deployment
@@ -49,14 +46,23 @@ spec:
     spec:
       containers:
         - name: static-web-app-v1-c
-          image: doitlabs/web-app-static:1.0.6
-          env:
-            - name: C_MESSAGE
-              value: "Stay Awhile & Listen; Lab-7-v1"
+          image: nginx:alpine
+          ports:
+            - name: http-80
+              containerPort: 80
+              protocol: TCP
+          volumeMounts:
+            - name: html
+              mountPath: /usr/share/nginx/html/index.html
+              subPath: v1
+      volumes:
+        - name: html
+          configMap:
+            name: nginx-html
 
 ---
 #
-# @info: This is our deployment manifest for web-app-static-blue:1.0.6 (v2)
+# @info: This is our deployment manifest for "v2"
 # --
 apiVersion: apps/v1
 kind: Deployment
@@ -79,14 +85,23 @@ spec:
     spec:
       containers:
         - name: static-web-app-v2-c
-          image: doitlabs/web-app-static-blue:1.0.6
-          env:
-            - name: C_MESSAGE
-              value: "Stay Awhile & Listen; Lab-7-v2"
+          image: nginx:alpine
+          ports:
+            - name: http-80
+              containerPort: 80
+              protocol: TCP
+          volumeMounts:
+            - name: html
+              mountPath: /usr/share/nginx/html/v2/index.html
+              subPath: v2
+      volumes:
+        - name: html
+          configMap:
+            name: nginx-html
 
 ---
 #
-# @info: This is our deployment manifest for web-app-static-green:1.0.6 (v3)
+# @info: This is our deployment manifest for "v3"
 # --
 apiVersion: apps/v1
 kind: Deployment
@@ -109,7 +124,16 @@ spec:
     spec:
       containers:
         - name: static-web-app-v3-c
-          image: doitlabs/web-app-static-green:1.0.6
-          env:
-            - name: C_MESSAGE
-              value: "Stay Awhile & Listen; Lab-7-v3"
+          image: nginx:alpine
+          ports:
+            - name: http-80
+              containerPort: 80
+              protocol: TCP
+          volumeMounts:
+            - name: html
+              mountPath: /usr/share/nginx/html/v3/index.html
+              subPath: v3
+      volumes:
+        - name: html
+          configMap:
+            name: nginx-html

@@ -33,7 +33,7 @@ spec:
     - http:
         paths:
           #
-          # @info: This is our path to web-app-static:1.0.6 (v1/default)
+          # @info: This is our path to the v1 deployment
           # --
           - path: /*
             pathType: ImplementationSpecific
@@ -44,7 +44,7 @@ spec:
                   number: 8080
 
           #
-          # @info: This is our path to web-app-static-blue:1.0.6 (v2/blue)
+          # @info: This is our path to the v2 deployment
           # --
           - path: /v2/*
             pathType: ImplementationSpecific
@@ -55,7 +55,7 @@ spec:
                   number: 8080
 
           #
-          # @info: This is our path to web-app-static-green:1.0.6 (v3/green)
+          # @info: This is our path to the v3 deployment
           # --
           - path: /v3/*
             pathType: ImplementationSpecific
