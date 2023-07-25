@@ -35,6 +35,7 @@ gcloud config set compute/zone europe-west1-b
 ## Cluster Provisioning
 
 Update `${GCP_PROJECT}` with the correct project name throughout the tutorial:
+
 ```bash
 export GCP_PROJECT=$(gcloud config get core/project)
 ```
