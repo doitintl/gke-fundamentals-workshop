@@ -9,8 +9,6 @@
 
 In the following lab we will set up our local development environment, provision the workshop cluster and roll out our static web application example with an additional sidecar and init-container. Your deployment won't be exposed and is only available by ClusterIP of the corresponding pod-service. You can access the application by tunneling your localhost through `kubectl proxy` command, or `kubectl port-forward`.
 
-<!-- ![application screenshot](../.github/media/lab-02-screenshot-small.png) -->
-
 ## Deployment
 
 1. Run deployment
@@ -36,11 +34,11 @@ kubectl logs -f -l k8s-app=static-web-app-advanced -n doit-lab-02 -c 001-static-
 # logs of web applications sidecar (container=002-static-web-app-sidecar-c)
 kubectl logs -f -l k8s-app=static-web-app-advanced -n doit-lab-02 -c 002-static-web-app-sidecar-c
 
-# logs of pod's primary init container (container=000-static-web-app-advanced-init-c)
+# logs of the pods init container (container=000-static-web-app-advanced-init-c)
 kubectl logs -f -l k8s-app=static-web-app-advanced -n doit-lab-02 -c 000-static-web-app-advanced-init-c
 ```
 
-3. You can access this pod from your local environment by kubectl port-forwarding & access the app by hitting url `http://localhost:8080`
+3. You can access this pod from your local environment using kubectl port-forwarding & access the app by hitting url `http://localhost:8080`
 
 ```bash
 kubectl port-forward pod/static-web-app-advanced 8080:80 -n doit-lab-02

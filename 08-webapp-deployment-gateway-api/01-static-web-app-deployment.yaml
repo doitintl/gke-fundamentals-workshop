@@ -16,28 +16,18 @@
 # --
 # @spec: https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/deployment-v1/
 #
-# @info: Here we create a simple deployment that describes a nginx-based static web application
-#        and provisions it within the cluster. You can access this app from the HTTP/S Load Balancer
-#        that we'll create using an Ingress object, or from your local environment using
-#        kubectl's port-forwarding command and access the web-application on localhost:8080 ...
-#
-#        $ kubectl port-forward service/static-web-app-service 8080:8080 -n doit-lab-06
+# @info: Here we create a static nginx web app to be exposed by our Gateway
 # --
 #
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: static-web-app-deployment
-  namespace: doit-lab-06
+  namespace: doit-lab-08
   labels:
     k8s-app: static-web-app
-    k8s-scope: gke-ws-doit-lab-06
+    k8s-scope: gke-ws-doit-lab-08
 spec:
-  #
-  # The specs for a deployment here consist of the three most important key sections: replicas, selector and template;
-  # In 'template' we find another spec section that describes the actual web application (similar to our pod example);
-  # We will also indirectly address the ReplicaSet as a resource in k8s in this example by setting the replicas to n>1.
-  # --
   replicas: 3
   selector:
     matchLabels:
@@ -46,10 +36,10 @@ spec:
     metadata:
       labels:
         k8s-app: static-web-app
-        k8s-scope: gke-ws-doit-lab-06
+        k8s-scope: gke-ws-doit-lab-08
     spec:
       containers:
-        - name: static-web-app-c
+        - name: static-web-app
           image: nginx:alpine
           ports:
             - name: http-80

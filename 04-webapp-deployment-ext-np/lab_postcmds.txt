@@ -16,7 +16,7 @@
 
 5. To access your service by NodePort you have to allow tcp-access to your port-definition (e.g. 30000)
 
--> $ gcloud compute firewall-rules create my-node-port-opened-service --allow tcp:30000
+-> $ gcloud compute firewall-rules create my-node-port-opened-service --allow tcp:30000 --priority 999
 
 6. Now you can access your service calling one of your external node-IPs:30000 in your browser
 

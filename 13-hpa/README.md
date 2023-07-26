@@ -20,7 +20,7 @@ kubectl apply -f 01-php-deployment.yaml
 
 ```bash
 kubectl get pods -n doit-lab-13
-kubectl describe pod ... -n doit-lab-13
+kubectl describe pod --selector run=php-apache -n doit-lab-13
 ```
 
 3. Deploy the load generator:
@@ -44,7 +44,7 @@ kubectl apply -f 03-php-hpa.yaml
 6. Check/wait for scaleup:
 
 ```bash
-watch -n 1 'kubectl top pod -n doit-lab-13'
+kubectl get pod -n doit-lab-13 -w
 ```
 
 ## Application Clean-Up

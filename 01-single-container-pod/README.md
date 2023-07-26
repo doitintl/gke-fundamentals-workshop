@@ -7,9 +7,7 @@
 
 ## Introduction
 
-In the following lab we will set up our local development environment, provision the workshop cluster and roll out our static web application example ([source](https://github.com/doitintl/labs-web-app-static) as single container Pod. Your deployment won't be exposed and is only available by ClusterIP of the corresponding pod-service. You can access the application by tunneling your localhost through `kubectl proxy` command.
-
-![application screenshot](../.github/media/lab-01-screenshot-small.png)
+In the following lab we will set up our local development environment, provision the workshop cluster and roll out a static nginx page as single container Pod. Your deployment won't be exposed and is only available by ClusterIP of the corresponding pod-service. You can access the application by tunneling your localhost through `kubectl proxy` command.
 
 ## Deployment
 

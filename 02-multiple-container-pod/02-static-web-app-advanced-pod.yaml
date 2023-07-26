@@ -39,7 +39,23 @@ metadata:
     k8s-scope: gke-ws-doit-lab-02
 spec:
   #
-  # These are our two primary container definitions within the pod. both containers share the same namespaces, cgroups
+  # An initContainer in Kubernetes is a special type of container that runs to completion before the main app’s container
+  # and the pod will repeatedly restart until all of them succeed. It’s sometimes necessary to prepare the primary container
+  # which will be running our application or the main logic, and it's accomplished through initContainers.
+  # --
+  initContainers:
+    - name: 000-static-web-app-advanced-init-c
+      image: busybox:1.28
+      command:
+        - /bin/sh
+      args:
+        - -c
+        - echo 'Initializing data for the main container' | tee /scratch/data
+      volumeMounts:
+        - mountPath: /scratch
+          name: scratch
+  #
+  # These are our two primary container definitions within the pod. Both containers share the same namespaces, cgroups
   # and potentially other facets of isolation - the same things that isolate a Docker container. Within a Pod's context,
   # the individual applications may have further sub-isolations applied. In terms of Docker concepts, a Pod is similar
   # to a group of Docker containers with shared namespaces and shared filesystem volumes.
@@ -55,6 +71,8 @@ spec:
         - mountPath: /usr/share/nginx/html/index.html
           name: index-html
           subPath: index.html
+        - mountPath: /scratch
+          name: scratch
     - name: 002-static-web-app-sidecar-c
       image: busybox:1.28
       command: ["sh", "-c"]
@@ -63,22 +81,13 @@ spec:
           echo "I'm really busy right now ... please come back later!";
           sleep 30;
           done;
+  #
+  # Volumes of different types can be defined in the pod spec and then mounted to
+  # individual containers using the volumeMounts fields of the container spec.
+  # --
   volumes:
     - name: index-html
       configMap:
         name: static-web-app-advanced-index
-
-  #
-  # An Init-container in Kubernetes is a special type of container that runs to completion before the main app’s container
-  # and the pod will repeatedly restart until all of them succeed. It’s sometimes necessary to prepare the primary container
-  # which will be running our application or the main logic, and it's accomplished through init containers.
-  # --
-  initContainers:
-    - name: 000-static-web-app-advanced-init-c
-      image: busybox:1.28
-      command:
-        - sysctl
-        - -w
-        - vm.max_map_count=262144
-      securityContext:
-        privileged: true
+    - name: scratch
+      emptyDir: {}

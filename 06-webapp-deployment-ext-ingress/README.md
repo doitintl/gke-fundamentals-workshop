@@ -7,9 +7,8 @@
 
 ## Introduction
 
-In the following lab we will set up our local development environment, provision the workshop cluster and roll out our static web application example ([source](https://github.com/doitintl/labs-web-app-static). Your deployment will be exposed by corresponding pod-service and wait for incoming traffic through our GCE Ingress-Controller (`http://<external-lb-ip>`).
-
-![application screenshot](../.github/media/lab-06-screenshot-small.png)
+In the following lab we will set up our local development environment, provision the workshop cluster and roll out a static nginx page. Your deployment will be exposed by corresponding pod-service and wait for incoming traffic through our GCE Ingress-Controller (`http://<external-lb-ip>`).
+The created LB will utilize [Container Native Load Balancing](https://cloud.google.com/kubernetes-engine/docs/concepts/container-native-load-balancing) to send traffic directly to the Pods.
 
 ## Deployment
 
@@ -19,12 +18,18 @@ In the following lab we will set up our local development environment, provision
 kubectl apply -f .
 ```
 
-2. Check current ingress state (external IP)
+2. Check current ingress state (address)
 
 _this step can take up to 3 Minutes_
 
 ```bash
 kubectl get ingress -n doit-lab-06 --watch
+```
+
+3. Confirm that a Load Balancer was created on the cloud
+
+```bash
+gcloud compute forwarding-rules list --filter='description~doit-lab-06'
 ```
 
 ## Cluster Application Check / Playground
@@ -47,7 +52,7 @@ kubectl get service -n doit-lab-06
 kubectl describe ingress static-web-app-ingress -n doit-lab-06
 ```
 
-4. As soon as your ingress resource, ingress controller and the corresponding loadBalancer is provisioned (3-4 minutes):
+4. A couple of minutes after your ingress resource, ingress controller and the corresponding loadBalancer is provisioned (3-4 minutes):
 
 4.1 You can check the benchmark of your web-application using apache-bench command as shown below:
 

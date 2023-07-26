@@ -7,7 +7,8 @@
 
 ## Introduction
 
-In the following lab we will set up our local development environment, provision the workshop GKE cluster with the [Config connector add-on](https://cloud.google.com/config-connector/docs/how-to/install-upgrade-uninstall) installed, then create some resources in GCP using [Config Connector CRDs](https://cloud.google.com/config-connector/docs/reference/overview). This lab will give insight into create Cloud infrastructure and resources using Config Connector, which is a simple way to define infrastructure as code.
+On standard GKE cluster, Config Connector can be installed as an [add-on](https://cloud.google.com/config-connector/docs/how-to/install-upgrade-uninstall), unfortunately this currently not supported for Autopilot clusters.
+Therefore we will install the [Config Connector operator manually](https://cloud.google.com/config-connector/docs/how-to/advanced-install#installing_the_operator), which also gives us the advantage of running the latest available version.
 
 ## Core Requirements
 
@@ -21,49 +22,16 @@ For the use of the local development environment for all GKE/K8s relevant CLI/AP
 export GCP_PROJECT=$(gcloud config get core/project)
 ```
 
-## Cluster Preparation
+## Install Config Connector in our cluster
 
-The preparation of the GKE cluster is one of the first steps of our workshop and is the basis for all our further activity using the local development environment of all participants. We will pave the way to our first K8s application deployment step by step in the following section, learning some of the basics of using the gcloud SDK CLI and kubectl.
-
-## GCloud SDK Preparation
+Instructions from the [official documentation](https://cloud.google.com/config-connector/docs/how-to/advanced-install#installing_the_operator):
 
 ```bash
-gcloud init
-gcloud config set compute/zone europe-west1-b
-```
+gsutil cp gs://configconnector-operator/latest/release-bundle.tar.gz release-bundle.tar.gz
 
-## Cluster Provisioning
+tar zxvf release-bundle.tar.gz
 
-Update `${GCP_PROJECT}` with the correct project name throughout the tutorial:
-```bash
-export GCP_PROJECT=$(gcloud config get core/project)
-```
-
-The present gcloud command call initializes the workshop in a configuration that is as compatible as possible for all upcoming labs. If you have already initialized the cluster, you can skip this step!
-
-```bash
-gcloud container clusters create workshop \
---machine-type n1-standard-4 \
---node-locations europe-west1-b \
---num-nodes "1" \
---release-channel stable \
---region europe-west1 \
---disk-type "pd-ssd" \
---disk-size "120" \
---network "default" \
---logging=SYSTEM,WORKLOAD \
---monitoring=SYSTEM \
---scopes "https://www.googleapis.com/auth/source.read_write,cloud-platform" \
---labels k8s-scope=kubernetes-workshop-doit,k8s-cluster=primary,environment=workshop \
---addons HorizontalPodAutoscaling,HttpLoadBalancing,ConfigConnector \
---workload-pool=${GCP_PROJECT}.svc.id.goog && \
-kubectl cluster-info
-```
-
-Now it is time to give the current user complete control over the created cluster using RBAC.
-
-```bash
-kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value account)
+kubectl apply -f operator-system/autopilot-configconnector-operator.yaml
 ```
 
 ## Create an identity for Config Connector
@@ -191,9 +159,6 @@ Inspect each YAML manifest before applying, describe created resources with `kub
 # delete k8s namespace and resources in it
 kubectl delete ns doit-lab-10
 
-# optional: delete GKE cluster
-gcloud container clusters delete workshop --region europe-west1
-
 # optional: delete Config Connector IAM Service Account (if cluster is deleted)
 gcloud iam service-accounts delete config-connector-sa@${GCP_PROJECT}.iam.gserviceaccount.com
 ```
@@ -202,6 +167,7 @@ gcloud iam service-accounts delete config-connector-sa@${GCP_PROJECT}.iam.gservi
 
 - https://cloud.google.com/config-connector/docs/overview
 - https://cloud.google.com/config-connector/docs/how-to/install-upgrade-uninstall
+- https://cloud.google.com/config-connector/docs/how-to/advanced-install#installing_the_operator
 - https://cloud.google.com/config-connector/docs/how-to/organizing-resources/overview
 - https://cloud.google.com/config-connector/docs/how-to/getting-started
 - https://cloud.google.com/config-connector/docs/reference/overview
@@ -210,30 +176,3 @@ gcloud iam service-accounts delete config-connector-sa@${GCP_PROJECT}.iam.gservi
 - https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
 - https://cloud.google.com/kubernetes-engine/docs/tutorials/authenticating-to-cloud-platform
 - https://kubernetes.io/docs/reference/kubectl/cheatsheet/
-
-## License
-
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-
-See [LICENSE](LICENSE) for full details.
-
-    Licensed to the Apache Software Foundation (ASF) under one
-    or more contributor license agreements.  See the NOTICE file
-    distributed with this work for additional information
-    regarding copyright ownership.  The ASF licenses this file
-    to you under the Apache License, Version 2.0 (the
-    "License"); you may not use this file except in compliance
-    with the License.  You may obtain a copy of the License at
-
-      https://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing,
-    software distributed under the License is distributed on an
-    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-    KIND, either express or implied.  See the License for the
-    specific language governing permissions and limitations
-    under the License.
-
-## Copyright
-
-Copyright © 2021 DoiT International

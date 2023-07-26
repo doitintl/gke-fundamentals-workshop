@@ -1,6 +1,6 @@
-# When you use the Google Cloud console, HorizontalPodAutoscaler objects are created using the autoscaling/v2beta2 API.
+# When you use the Google Cloud console, HorizontalPodAutoscaler objects are created using the autoscaling/v2 API.
 # https://cloud.google.com/kubernetes-engine/docs/how-to/horizontal-pod-autoscaling#api-versions
-apiVersion: autoscaling/v2beta2
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: php-apache

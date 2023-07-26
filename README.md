@@ -1,8 +1,8 @@
 # GKE Fundamentals
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![GKE/K8s Version](https://img.shields.io/badge/k8s%20version-1.22.8-blue.svg)](#)
-[![GCloud SDK Version](https://img.shields.io/badge/gcloud%20version-392.0.0-blue.svg)](#)
+[![GKE/K8s Version](https://img.shields.io/badge/k8s%20version-1.26.5-blue.svg)](#)
+[![GCloud SDK Version](https://img.shields.io/badge/gcloud%20version-440.0.0-blue.svg)](#)
 
 ## Introduction
 
@@ -26,7 +26,8 @@ In this full-day workshop, we will look at some core mechanisms of GKE. We will 
 For the use of the local development environment for all GKE/K8s relevant CLI/API calls a certain tool set is required and Linux or macOS as operating system is recommended. If it is not possible to install our stack due to limitations in terms of feasibility/availability in the preparation, you can alternatively use the browser-internal cloud shell of your GCP console.
 
 - `gcloud sdk` [installation](https://cloud.google.com/sdk/docs/install) tutorial
-- `kubectl` [installation](https://kubernetes.io/docs/tasks/tools/) tutorial
+- `kubectl` [installation](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl#install_kubectl) tutorial
+- `gke-gcloud-auth-plugin` [installation](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl#install_plugin)
 
 ## Workshop Cluster Preparation
 
@@ -47,7 +48,7 @@ alias k='kubectl'
 
 ## Workshop Cluster Provisioning
 
-The present gcloud command call initializes the workshop-cluster as regional cluster configuration with one node in each of three availability zones.
+The following `gcloud` command call initializes the workshop-cluster as a regional Autopilot cluster .
 
 - Please make sure that you are also in the project prepared for this workshop or that your used dev/sandbox project has also been selected via `cloud init`!
 
@@ -56,27 +57,24 @@ The present gcloud command call initializes the workshop-cluster as regional clu
   ```bash
   printf "%s\n" "[INIT] workshop cluster"
   UNIQUE_CLUSTER_KEY=$RANDOM; GCP_PROJECT=$(gcloud config get core/project);
-  gcloud container clusters create workshop-${UNIQUE_CLUSTER_KEY} \
-  --machine-type n2-standard-2 \
-  --scopes "https://www.googleapis.com/auth/source.read_write,cloud-platform" \
+  gcloud container clusters create-auto workshop-${UNIQUE_CLUSTER_KEY} \
   --region europe-west1 \
-  --node-locations europe-west1-b,europe-west1-c,europe-west1-d \
   --release-channel regular \
-  --disk-type "pd-ssd" \
-  --disk-size "60" \
-  --num-nodes "1" \
-  --max-nodes "1" \
-  --min-nodes "1" \
   --logging=SYSTEM,WORKLOAD \
   --monitoring=SYSTEM \
-  --network "default" \
-  --addons HorizontalPodAutoscaling,HttpLoadBalancing,NodeLocalDNS,ConfigConnector \
-  --labels k8s-scope=gke-workshop-doit,k8s-cluster=primary,k8s-env=workshop \
-  --workload-pool=${GCP_PROJECT}.svc.id.goog && \
+  --network "default" && \
   printf "%s\n" "[INIT] test access new cluster using k8s API via kubectl" \
   kubectl get all --all-namespaces && kubectl cluster-info && \
   printf "\n%s\n\n" "[INIT] workshop cluster finally initialized and available by ID -> [ workshop-${UNIQUE_CLUSTER_KEY} ] <-"
   ```
+
+## Workshop Cluster cleanup
+
+In order to delete the cluster and all resources within it, you can run the following command (requires confirmation):
+
+```bash
+gcloud container clusters delete workshop-${UNIQUE_CLUSTER_KEY} --region europe-west1
+```
 
 ## Links
 

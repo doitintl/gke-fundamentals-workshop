@@ -7,24 +7,14 @@
 
 ## Introduction
 
-In the following lab we will set up our local development environment, provision the workshop cluster and roll out our static web application example ([source](https://github.com/doitintl/labs-web-app-static). Your deployment will be exposed by corresponding pod-service and wait for incoming traffic through NodePort `30000` (`http://<one-node-ip>:30000`) at all available nodes in all zones.
-
-![application screenshot](../.github/media/lab-04-screenshot-small.png)
+In the following lab we will set up our local development environment, provision the workshop cluster and roll out a static nginx page. Your deployment will be exposed by corresponding pod-service and wait for incoming traffic through NodePort `30000` (`http://<one-node-ip>:30000`) at all available nodes in all zones.
 
 ## Deployment
 
-1. Run deployment
+1. Apply all manifests to the cluster
 
 ```bash
 kubectl apply -f .
-```
-
-2. Check current service load-balancer state (external IP)
-
-_this step can take up to 2 Minutes_
-
-```bash
-kubectl get service -n doit-lab-04 --watch
 ```
 
 ## Cluster Application Check / Playground
@@ -56,7 +46,7 @@ kubectl get nodes -o jsonpath='{ $.items[*].status.addresses[?(@.type=="External
 5. To access your service by NodePort you have to allow tcp-access to your port-definition (e.g. 30000)
 
 ```bash
-gcloud compute firewall-rules create my-node-port-opened-service --allow tcp:30000
+gcloud compute firewall-rules create my-node-port-opened-service --allow tcp:30000 --priority 999
 ```
 
 6. Now you can access your service calling one of your external node-IPs:30000 in your browser
