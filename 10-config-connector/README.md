@@ -22,6 +22,12 @@ For the use of the local development environment for all GKE/K8s relevant CLI/AP
 export GCP_PROJECT=$(gcloud config get core/project)
 ```
 
+- Enable Cloud Resource Manager API:
+
+```bash
+gcloud services enable cloudresourcemanager.googleapis.com
+```
+
 ## Install Config Connector in our cluster
 
 Instructions from the [official documentation](https://cloud.google.com/config-connector/docs/how-to/advanced-install#installing_the_operator):
