@@ -62,7 +62,8 @@ The following `gcloud` command call initializes the workshop-cluster as a region
   --release-channel regular \
   --logging=SYSTEM,WORKLOAD \
   --monitoring=SYSTEM \
-  --network "default" && \
+  --network "default" \
+  --subnetwork default && \
   printf "%s\n" "[INIT] test access new cluster using k8s API via kubectl" \
   kubectl get all --all-namespaces && kubectl cluster-info && \
   printf "\n%s\n\n" "[INIT] workshop cluster finally initialized and available by ID -> [ workshop-${UNIQUE_CLUSTER_KEY} ] <-"
