@@ -23,7 +23,7 @@ metadata:
 spec:
   # try to run 3 additional times before considering a Job as failed (default 6)
   backoffLimit: 3
-  # The Job pi-with-ttl will be eligible to be automatically deleted,
+  # The Job will be eligible to be automatically deleted,
   # 30 seconds after it finishes. If the field is set to 0, the Job
   # will be eligible to be automatically deleted immediately after it
   # finishes. If the field is unset, this Job won't be cleaned up by

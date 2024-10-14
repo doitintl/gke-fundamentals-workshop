@@ -66,7 +66,7 @@ HTTP response headers: HTTPHeaderDict({'Audit-Id': 'b22f55a8-df72-4bfd-bc50-bad8
 HTTP response body: {"kind":"Status","apiVersion":"v1","metadata":{},"status":"Failure","message":"pods \"pod-labeler-595b57b64-4j7r7\" is forbidden: User \"system:serviceaccount:doit-lab-11:pod-labeler\" cannot patch resource \"pods\" in API group \"\" in the namespace \"doit-lab-11\"","reason":"Forbidden","details":{"name":"pod-labeler-595b57b64-4j7r7","kind":"pods"},"code":403}
 ```
 
-5. We can see that the PATCH operations is failing. Let's check the RBAC role again:
+5. We can see that the PATCH operation is failing. Let's check the RBAC role again:
 
 ```bash
   kind: Role
