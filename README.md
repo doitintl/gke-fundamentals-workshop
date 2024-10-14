@@ -1,8 +1,8 @@
 # GKE Fundamentals
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![GKE/K8s Version](https://img.shields.io/badge/k8s%20version-1.26.5-blue.svg)](#)
-[![GCloud SDK Version](https://img.shields.io/badge/gcloud%20version-440.0.0-blue.svg)](#)
+[![GKE/K8s Version](https://img.shields.io/badge/k8s%20version-1.30.5-blue.svg)](#)
+[![GCloud SDK Version](https://img.shields.io/badge/gcloud%20version-496.0.0-blue.svg)](#)
 
 ## Introduction
 
