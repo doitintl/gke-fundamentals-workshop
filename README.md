@@ -19,7 +19,13 @@ In this full-day workshop, we will look at some core mechanisms of GKE. We will 
 | [05-webapp-deployment-ext-lb](./05-webapp-deployment-ext-lb)                         | simple loadBalancer service exposing example using the same backend-app |
 | [06-webapp-deployment-ext-ingress](./06-webapp-deployment-ext-ingress)               | simple ingress example using gce-based ingress controller               |
 | [07-webapp-deployment-ext-ingress-fanout](./07-webapp-deployment-ext-ingress-fanout) | advanced ingress fan-out example for multiple app-versions              |
-| [08-webapp-k8s-dashboard-deployment](./08-webapp-k8s-dashboard-deployment)           | advanced deployment example using secrets, configmaps and RBAC          |
+| [08-webapp-deployment-gateway-api](./08-webapp-deployment-gateway-api) | example deployment exposed using Gateway API |
+| [09-workload-identity-pubsub](./09-workload-identity-pubsub) | connect a workload to Pub/Sub using Workload Identity Federation for GKE |
+| [10-config-connector](./10-config-connector) | deploy and configure Config Connector, the use it to provision Pub/Sub resources and connect a workload  |
+| [11-rbac-podlabeler](./11-rbac-podlabeler) | demonstrates RBAC permissions |
+| [12-jobs](./12-jobs) | several examples of Kubernetes Jobs
+| [13-hpa](./13-hpa) | scaling a Deployment using HorizontalPodAutoscaler |
+| [14-pvc-deployment](./14-pvc-deployment) | an example deployment with a PersistentVolumeClaim|
 
 ## Core Requirements
 
