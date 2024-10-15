@@ -16,10 +16,10 @@ For the use of the local development environment for all GKE/K8s relevant CLI/AP
 
 - `gcloud sdk` [installation](https://cloud.google.com/sdk/docs/install) tutorial
 - `kubectl` [installation](https://kubernetes.io/docs/tasks/tools/) tutorial
-- `${GCP_PROJECT}` is used throughout the lab as a placeholder, `envsubst` is used in each kubectl command that needs to evaluate this variable, so make sure to export the project name:
+- `${PROJECT_ID}` is used throughout the lab as a placeholder, `envsubst` is used in each kubectl command that needs to evaluate this variable, so make sure to export the project name:
 
 ```bash
-export GCP_PROJECT=$(gcloud config get core/project)
+export PROJECT_ID=$(gcloud config get core/project)
 ```
 
 - Enable Cloud Resource Manager API:
@@ -42,13 +42,13 @@ kubectl apply -f operator-system/autopilot-configconnector-operator.yaml
 
 ## Create an identity for Config Connector
 
-The Config Connector controller utilizes [Workload Identity](../09-workload-identity-pubsub/README.md) to impersonate an IAM service account with permissions in the project. This service account needs to have `roles/owner` role (if you plan to manage IAM, or resources on the folder/organization level), or `roles/editor` otherwise.
+The Config Connector controller utilizes [Workload Identity Federation for GKE](../09-workload-identity-pubsub/README.md) to impersonate an IAM service account with permissions in the project. This service account needs to have `roles/owner` role (if you plan to manage IAM, or resources on the folder/organization level), or `roles/editor` otherwise.
 
 ```bash
 gcloud iam service-accounts create config-connector-sa
 
-gcloud projects add-iam-policy-binding ${GCP_PROJECT} \
-    --member="serviceAccount:config-connector-sa@${GCP_PROJECT}.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+    --member="serviceAccount:config-connector-sa@${PROJECT_ID}.iam.gserviceaccount.com" \
     --role="roles/owner"
 ```
 
@@ -56,8 +56,8 @@ Then allow the Config Connector controller KSA to use the GSA we just created:
 
 ```bash
 gcloud iam service-accounts add-iam-policy-binding \
-    config-connector-sa@${GCP_PROJECT}.iam.gserviceaccount.com \
-    --member="serviceAccount:${GCP_PROJECT}.svc.id.goog[cnrm-system/cnrm-controller-manager]" \
+    config-connector-sa@${PROJECT_ID}.iam.gserviceaccount.com \
+    --member="serviceAccount:${PROJECT_ID}.svc.id.goog[cnrm-system/cnrm-controller-manager]" \
     --role="roles/iam.workloadIdentityUser"
 ```
 
@@ -67,7 +67,7 @@ Config Connector can run either in `cluster` or in `namespaced` mode. `cluster` 
 We will configure Config Connector to run in `cluster` mode, read [here](https://cloud.google.com/config-connector/docs/how-to/advanced-install#namespaced-mode) for instructions for `namespaced` mode.
 
 ```bash
-# replace ${GCP_PROJECT} with the correct value in this file before applying!!
+# replace ${PROJECT_ID} with the correct value in this file before applying!!
 envsubst < 00-configconnector.yaml | kubectl apply -f -
 ```
 
@@ -79,7 +79,7 @@ For that, we will need to set an [annotation specifying the project id](https://
 In order to avoid annotating each individual resource, we will create the Namespace with the annotation setting the correct project id:
 
 ```bash
-# replace ${GCP_PROJECT} with the correct value in this file before applying!!
+# replace ${PROJECT_ID} with the correct value in this file before applying!!
 envsubst < 01-namespace.yaml | kubectl apply -f -
 ```
 
@@ -101,10 +101,11 @@ kubectl -n doit-lab-10 wait --for=condition=READY pubsubsubscription echo-read
 
 ## Create KSA, GSA and IAM bindings
 
-We will use Config Connector in conjunction with Workload Identity, to create a GSA with IAM permissions to subscribe to pubsub, then create a KSA that can use that GSA with Workload Identity.
+We will use Config Connector in conjunction with Workload Identity Federation for GKE, to create a GSA with IAM permissions to subscribe to pubsub, then create a KSA that can use that GSA with Workload Identity.
+Note that in the [Workload Identity lab](../09-workload-identity-pubsub) we create an IAM binding directly to the KSA principal which is a method that requires less setup work, but both methods are valid.
 
 ```bash
-# replace ${GCP_PROJECT} with the correct value in this file before applying!!
+# replace ${PROJECT_ID} with the correct value in this file before applying!!
 envsubst < 03-iam.yaml | kubectl apply -f -
 
 envsubst < 04-serviceaccount.yaml | kubectl apply -f -
@@ -130,7 +131,7 @@ kubectl -n doit-lab-10 logs -f --selector app=pubsub
 In another terminal window, post a message to the echo topic:
 
 ```bash
-gcloud pubsub topics publish echo --message="Hello, world\!"
+CLOUDSDK_API_ENDPOINT_OVERRIDES_PUBSUB=https://europe-west1-pubsub.googleapis.com/ gcloud pubsub topics publish echo --message="Hello, world\!"
 ```
 
 ## Additional notes on Config Connector
@@ -166,7 +167,7 @@ Inspect each YAML manifest before applying, describe created resources with `kub
 kubectl delete ns doit-lab-10
 
 # optional: delete Config Connector IAM Service Account (if cluster is deleted)
-gcloud iam service-accounts delete config-connector-sa@${GCP_PROJECT}.iam.gserviceaccount.com
+gcloud iam service-accounts delete config-connector-sa@${PROJECT_ID}.iam.gserviceaccount.com
 ```
 
 ## Links
@@ -181,4 +182,5 @@ gcloud iam service-accounts delete config-connector-sa@${GCP_PROJECT}.iam.gservi
 - https://cloud.google.com/config-connector/docs/concepts/managing-conflicts
 - https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
 - https://cloud.google.com/kubernetes-engine/docs/tutorials/authenticating-to-cloud-platform
+- https://engineering.doit.com/gke-workload-identity-is-now-named-workload-identity-federation-what-else-has-changed-148225d50d04
 - https://kubernetes.io/docs/reference/kubectl/cheatsheet/

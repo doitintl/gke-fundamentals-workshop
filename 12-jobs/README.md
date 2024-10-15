@@ -66,7 +66,7 @@ kubectl apply -f 05-job-ttl.yaml && kubectl get pods --watch
 ## Application Clean-Up
 
 ```bash
-kubectl delete -f <your-job-declaration-file.yaml>
+kubectl delete ns doit-lab-12
 ```
 
 ## Links

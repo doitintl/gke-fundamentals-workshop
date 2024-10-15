@@ -1,20 +1,25 @@
 # GKE Workshop LAB-09
 
-## Workload Identity example with Pub/Sub
+## Workload Identity Federation for GKE example with Pub/Sub
 
 [![Context](https://img.shields.io/badge/GKE%20Fundamentals-1-blue.svg)](#)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ## Introduction
 
-In the following lab we will run a Deployment and all necessary plumbing for it to communicate to a GCP service using [Workload Identity](https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity). This lab will give insight into the recommended method of authenticating workloads running within GKE to other GCP services using IAM permissions.
+In the following lab we will run a Deployment and all necessary plumbing for it to communicate to a GCP service using [Workload Identity Federation for GKE](https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity). This lab will give insight into the recommended method of authenticating workloads running within GKE to other GCP services using IAM permissions.
 
 ## Environment preparation
 
-Update `${GCP_PROJECT}` with the correct project name throughout the tutorial:
+Export the following environment variables that are use throughout this lab:
 
 ```bash
-export GCP_PROJECT=$(gcloud config get core/project)
+# project ID
+export PROJECT_ID=$(gcloud config get core/project)
+
+# project number
+export PROJECT_NUMBER=$(gcloud projects describe ${PROJECT_ID} --format="value(projectNumber)"
+)
 ```
 
 ## Create test Pub/Sub topic and subscription
@@ -33,36 +38,21 @@ We create a Namespace to deploy our application in and a ServiceAccount that wil
 ```bash
 kubectl create namespace doit-lab-09
 kubectl create serviceaccount pubsub-sa --namespace doit-lab-09
-
 ```
 
-## Google Service Account and IAM bindings creation
+## IAM bindings creation
 
-Workload Identity works by creating a relationship between a Google Service Account (GSA) and a Kubernetes Service Account (KSA). We will grant the required IAM permissions to the GSA, and any workload running in GKE using the related KSA will have access to it. In this case, we will create a GSA and give it permission to subscribe to a Pub/Sub subscription.
+To let your GKE applications authenticate to Google Cloud APIs using Workload Identity Federation for GKE, you create IAM policies for the specific APIs. The principal in these policies is an IAM principal identifier that corresponds to the workloads, namespaces, or ServiceAccounts. This process returns a federated access token that your workload can use in API calls.
 
-```bash
-gcloud iam service-accounts create gke-pubsub \
-    --project=${GCP_PROJECT}
+Alternatively, you can configure Kubernetes ServiceAccounts to impersonate IAM service accounts, which configures GKE to exchange the federated access token for an access token from the IAM Service Account Credentials API. We cover this method in the [Config Connector lab](../10-config-connector) and it can also be reviewed in the [official documentation](https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity#kubernetes-sa-to-iam).
 
-gcloud projects add-iam-policy-binding ${GCP_PROJECT} \
-    --member "serviceAccount:gke-pubsub@${GCP_PROJECT}.iam.gserviceaccount.com" \
-    --role "roles/pubsub.subscriber"
-```
-
-Now that we created the GSA, we need to bind the KSA to it. This is done by granting the KSA the `roles/iam.workloadIdentityUser` IAM role on the GSA:
+In this case, we will grant our Kubernetes Service Account (KSA) the permission to subscribe to a Pub/Sub subscription.
 
 ```bash
-gcloud iam service-accounts add-iam-policy-binding gke-pubsub@${GCP_PROJECT}.iam.gserviceaccount.com \
-    --role roles/iam.workloadIdentityUser \
-    --member "serviceAccount:${GCP_PROJECT}.svc.id.goog[doit-lab-09/pubsub-sa]"
-```
-
-Eventually, we annotate the KSA with the GSA email address:
-
-```bash
-kubectl annotate serviceaccount pubsub-sa \
-    --namespace doit-lab-09 \
-    iam.gke.io/gcp-service-account=gke-pubsub@${GCP_PROJECT}.iam.gserviceaccount.com
+gcloud projects add-iam-policy-binding projects/${PROJECT_ID} \
+    --role=roles/pubsub.subscriber \
+    --member=principal://iam.googleapis.com/projects/${PROJECT_NUMBER}/locations/global/workloadIdentityPools/${PROJECT_ID}.svc.id.goog/subject/ns/doit-lab-09/sa/pubsub-sa \
+    --condition=None
 ```
 
 ## Cluster Application Deployment
@@ -108,8 +98,10 @@ kubectl config set-context --current --namespace=doit-lab-09
 # delete k8s namespace and resources in it
 kubectl delete ns doit-lab-09
 
-# delete IAM Service Account
-gcloud iam service-accounts delete gke-pubsub@${GCP_PROJECT}.iam.gserviceaccount.com
+# delete IAM binding to KSA
+gcloud projects remove-iam-policy-binding projects/${PROJECT_ID} \
+    --role=roles/pubsub.subscriber \
+    --member=principal://iam.googleapis.com/projects/${PROJECT_NUMBER}/locations/global/workloadIdentityPools/${PROJECT_ID}.svc.id.goog/subject/ns/doit-lab-09/sa/pubsub-sa
 
 # delete Pub/Sub subscription and topic
 gcloud pubsub subscriptions delete echo-read
@@ -118,6 +110,8 @@ gcloud pubsub topics delete echo
 
 ## Links
 
+- https://cloud.google.com/kubernetes-engine/docs/concepts/workload-identity
 - https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
 - https://cloud.google.com/kubernetes-engine/docs/tutorials/authenticating-to-cloud-platform
+- https://engineering.doit.com/gke-workload-identity-is-now-named-workload-identity-federation-what-else-has-changed-148225d50d04
 - https://kubernetes.io/docs/reference/kubectl/cheatsheet/

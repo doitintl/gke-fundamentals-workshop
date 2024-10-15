@@ -50,5 +50,5 @@ kubectl get pod -n doit-lab-13 -w
 ## Application Clean-Up
 
 ```bash
-kubectl delete -f .
+kubectl delete ns doit-lab-13
 ```

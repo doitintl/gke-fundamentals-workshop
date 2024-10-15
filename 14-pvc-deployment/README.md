@@ -80,7 +80,7 @@ And make sure that data was persisted across restarts
 ## Application Clean-Up
 
 ```bash
-kubectl delete -f .
+kubectl delete ns doit-lab-14
 ```
 
 ## Links
