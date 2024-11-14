@@ -19,7 +19,7 @@ spec:
   resourceRef:
     apiVersion: resourcemanager.cnrm.cloud.google.com/v1beta1
     kind: Project
-    external: projects/${GCP_PROJECT}
+    external: projects/${PROJECT_ID}
 ---
 apiVersion: iam.cnrm.cloud.google.com/v1beta1
 kind: IAMPolicyMember
@@ -27,7 +27,7 @@ metadata:
   name: pubsub-sa-workloadidentity
   namespace: doit-lab-10
 spec:
-  member: serviceAccount:${GCP_PROJECT}.svc.id.goog[doit-lab-10/pubsub-sa]
+  member: serviceAccount:${PROJECT_ID}.svc.id.goog[doit-lab-10/pubsub-sa]
   role: roles/iam.workloadIdentityUser
   resourceRef:
     apiVersion: iam.cnrm.cloud.google.com/v1beta1
